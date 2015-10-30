@@ -1,4 +1,4 @@
-CANDY-IoT Systemd Service
+CANDY-IoT Board Service
 ===
 
 Intel Edison Yocto上で動作するCANDY-IoTボードを動作させるためのサービス。以下の機能を提供する。
@@ -40,6 +40,7 @@ root@binita:~#
 ```bash
 root@binita:~# curl -L https://github.com/Robotma-com/candy-iot-service/raw/master/install.sh | bash
 [INFO] cdc_ether has been installed
+ln -s '/lib/systemd/system/candy-iot.service' '/etc/systemd/system/multi-user.target.wants/candy-iot.service'
 [INFO] candy-iot service has been installed
 [ALERT] *** Please reboot the system! (enter 'reboot') ***
 ```
@@ -55,27 +56,43 @@ root@binita:~# reboot
 root@binita:~# systemctl status candy-iot
 ● candy-iot.service - CANDY-IoT Board Service
    Loaded: loaded (/lib/systemd/system/candy-iot.service; enabled)
-   Active: active (exited) since Fri 2015-10-30 08:32:05 UTC; 1min 3s ago
-  Process: 649 ExecStart=/opt/robotma/candy-iot/start_systemd.sh (code=exited, status=0/SUCCESS)
- Main PID: 649 (code=exited, status=0/SUCCESS)
+   Active: active (exited) since Fri 2015-10-30 09:20:31 UTC; 32s ago
+  Process: 268 ExecStart=/opt/robotma/candy-iot/start_systemd.sh (code=exited, status=0/SUCCESS)
+ Main PID: 268 (code=exited, status=0/SUCCESS)
+   CGroup: /system.slice/candy-iot.service
+           └─374 udhcpc -i enp0s17u1
 
-Oct 30 08:32:04 binita start_systemd.sh[649]: root: Initializing CANDY-IoT B....
-Oct 30 08:32:05 binita start_systemd.sh[649]: root: Activating LTE/3G Module...
-Oct 30 08:32:05 binita start_systemd.sh[649]: udhcpc (v1.22.1) started
-Oct 30 08:32:05 binita start_systemd.sh[649]: Sending discover...
-Oct 30 08:32:05 binita start_systemd.sh[649]: Sending select for 192.168.225....
-Oct 30 08:32:05 binita start_systemd.sh[649]: Lease of 192.168.225.22 obtain...0
-Oct 30 08:32:05 binita start_systemd.sh[649]: /etc/udhcpc.d/50default: Addin...1
-Oct 30 08:32:05 binita start_systemd.sh[649]: root: The interface [enp0s17u1...!
-Oct 30 08:32:05 binita start_systemd.sh[649]: root: CANDY-IoT Board is initi...!
-Oct 30 08:32:05 binita systemd[1]: Started CANDY-IoT Board Service.
+Oct 30 09:20:28 binita start_systemd.sh[268]: udhcpc (v1.22.1) started
+Oct 30 09:20:28 binita start_systemd.sh[268]: Sending discover...
+Oct 30 09:20:31 binita start_systemd.sh[268]: Sending select for 192.168.225....
+Oct 30 09:20:31 binita start_systemd.sh[268]: Lease of 192.168.225.37 obtain...0
+Oct 30 09:20:31 binita start_systemd.sh[268]: /etc/udhcpc.d/50default: Addin...1
+Oct 30 09:20:31 binita start_systemd.sh[268]: root: The interface [enp0s17u1...!
+Oct 30 09:20:31 binita root[375]: The interface [enp0s17u1] is up!
+Oct 30 09:20:31 binita start_systemd.sh[268]: root: CANDY-IoT Board is initi...!
+Oct 30 09:20:31 binita root[376]: CANDY-IoT Board is initialized successfully!
+Oct 30 09:20:31 binita systemd[1]: Started CANDY-IoT Board Service.
 Hint: Some lines were ellipsized, use -l to show in full.
 ```
 
-## アンインストール方法
-インターネットに接続し、スクリプトをダウンロードしてアンインストール。
+上記の`enp0s17u1`が、LTE/3Gモジュールのネットワークインタフェースとなる。
+
 ```bash
-root@binita:~# curl -L https://github.com/Robotma-com/candy-iot-service/raw/master/uninstall.sh | bash
+root@binita:~# ifconfig enp0s17u1
+enp0s17u1 Link encap:Ethernet  HWaddr 99:99:99:99:99:99  
+          inet addr:192.168.225.37  Bcast:192.168.225.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:6 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:30 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:768 (768.0 B)  TX bytes:4234 (4.1 KiB)
+```
+
+## アンインストール方法
+`/opt/robotma/candy-iot/uninstall.sh`を実行する。
+
+```bash
+root@binita:~# /opt/robotma/candy-iot/uninstall.sh
 [INFO] candy-iot has been uninstalled
 [INFO] cdc_ether has been uninstalled
 [ALERT] *** Please reboot the system! (enter 'reboot') ***
@@ -93,6 +110,13 @@ root@binita:~# systemctl status candy-iot
 ● candy-iot.service
    Loaded: not-found (Reason: No such file or directory)
    Active: inactive (dead)
+```
+
+LTE/3Gモジュールのネットワークインタフェースも見えなくなる。
+
+```bash
+root@binita:~# ifconfig enp0s17u1
+enp0s17u1: error fetching interface information: Device not found
 ```
 
 ## 履歴
