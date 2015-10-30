@@ -51,12 +51,13 @@ function uninstall_service {
   rm -f ${LIB_SYSTEMD}/system/${SERVICE_NAME}.service
   rm -f ${SERVICE_HOME}/environment
   rm -f ${SERVICE_HOME}/*.sh
-  [ "$(ls -A ${SERVICE_HOME})" ] || rmdir ${SERVICE_HOME}
   info "${SERVICE_NAME} has been uninstalled"
   REBOOT=1
 }
 
 function teardown {
+  [ "$(ls -A ${SERVICE_HOME})" ] || rmdir ${SERVICE_HOME}
+  [ "$(ls -A ${ROBOTMA_HOME})" ] || rmdir ${ROBOTMA_HOME}
   if [ "${REBOOT}" == "1" ]; then
     alert "*** Please reboot the system! (enter 'reboot') ***"
   fi
