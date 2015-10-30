@@ -4,8 +4,8 @@ After=network.target
 Before=
 
 [Service]
-Type=oneshot
-RemainAfterExit=yes
+Type=simple
+RemainAfterExit=no
 ExecStart=/opt/robotma/candy-iot/start_systemd.sh
 ExecStop=/opt/robotma/candy-iot/stop_systemd.sh
 Environment="HOME=/opt/robotma/candy-iot/"
