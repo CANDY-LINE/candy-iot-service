@@ -1,0 +1,16 @@
+[Unit]
+Description=CANDY-IoT Board Service
+After=network.target
+Before=
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/opt/robotma/candy-iot/start_systemd.sh
+ExecStop=/opt/robotma/candy-iot/stop_systemd.sh
+Environment="HOME=/opt/robotma/candy-iot/"
+WorkingDirectory=/opt/robotma/candy-iot/
+EnvironmentFile=/opt/robotma/candy-iot/environment
+
+[Install]
+WantedBy=multi-user.target
