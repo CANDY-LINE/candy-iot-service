@@ -120,5 +120,8 @@ enp0s17u1: error fetching interface information: Device not found
 ```
 
 ## 履歴
+* 1.0.1
+  - デフォルトゲートウェイの設定が起動時に正しく行われない問題を修正
+
 * 1.0.0
   - [AM Telecom社製LTE/3GモジュールAMP5200/AMP5220](http://www.amtel.co.jp/english/product/list?category=1020)に対応
