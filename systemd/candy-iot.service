@@ -1,6 +1,6 @@
 [Unit]
-Description=CANDY-IoT Board Service
-After=network.target
+Description=CANDY-IoT Board Service (v1.0.1)
+After=wpa_supplicant.service
 Before=
 
 [Service]
