@@ -81,7 +81,11 @@ function install_service {
   fi
   download
   
-  LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))/lib/systemd"
+  LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))"
+  if [ "${LIB_SYSTEMD}" == "/" ]; then
+    LIB_SYSTEMD=""
+  fi
+  LIB_SYSTEMD="${LIB_SYSTEMD}/lib/systemd"
   
   mkdir -p ${SERVICE_HOME}
   cp -f ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
