@@ -9,7 +9,13 @@ GITHUB_ID=Robotma-com/candy-iot-service
 VERSION=1.0.1
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
-SRC_DIR=/tmp/candy-iot-service-${VERSION}
+SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
+
+KERNEL="${KERNEL:-$(uname -r)}"
+CONTAINER_MODE=0
+if [ "${KERNEL}" != "$(uname -r)" ]; then
+  CONTAINER_MODE=1
+fi
 
 REBOOT=0
 
@@ -45,18 +51,21 @@ function install_cdc_ether {
   fi
   download
   
-  MOD_DIR=/lib/modules/$(uname -r)/kernel/drivers/net/usb/
+  MOD_DIR=/lib/modules/${KERNEL}/kernel/drivers/net/usb/
   mkdir -p ${MOD_DIR}
   cp ${SRC_DIR}/lib/cdc_ether.ko ${MOD_DIR}
-  depmod
-  modprobe cdc_ether
-  RET=$?
-  if [ "${RET}" != "0" ]; then
-    err "Failed to load cdc_ether!"
-    rm -f ${MOD_DIR}/cdc_ether.ko
-    rm -f /etc/modules-load.d/cdc_ether.conf
-    teardown
-    exit 1
+
+  if [ "${CONTAINER_MODE}" == "0" ]; then
+    depmod
+    modprobe cdc_ether
+    RET=$?
+    if [ "${RET}" != "0" ]; then
+      err "Failed to load cdc_ether!"
+      rm -f ${MOD_DIR}/cdc_ether.ko
+      rm -f /etc/modules-load.d/cdc_ether.conf
+      teardown
+      exit 1
+    fi
   fi
   
   echo "cdc_ether" > /etc/modules-load.d/cdc_ether.conf
