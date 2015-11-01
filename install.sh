@@ -95,7 +95,7 @@ function install_service {
 
 function teardown {
   [ "${DEBUG}" ] || rm -fr ${SRC_DIR}
-  if [ "${REBOOT}" == "1" ]; then
+  if [ "${CONTAINER_MODE}" == "0" ] && [ "${REBOOT}" == "1" ]; then
     alert "*** Please reboot the system! (enter 'reboot') ***"
   fi
 }
