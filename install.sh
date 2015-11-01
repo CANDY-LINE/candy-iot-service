@@ -33,6 +33,26 @@ function alert {
 
 function setup {
   [ "${DEBUG}" ] || rm -fr ${SRC_DIR}
+  if [ "${CP_DESTS}" != "" ]; then
+    rm -f "${CP_DESTS}"
+    touch "${CP_DESTS}"
+  fi
+}
+
+# $1 for the path to a file, $2 for the destination dir
+function cpf {
+  cp -f $1 $2
+  if [ "$?" == "0" ] && [ -f "${CP_DESTS}" ]; then
+    case "$2" in
+      */)
+      DEST="$2"
+      ;;
+      *)
+      DEST="$2/"
+      ;;
+    esac
+    echo "${DEST}$(basename $1)" >> "${CP_DESTS}"
+  fi
 }
 
 function download {
@@ -53,7 +73,7 @@ function install_cdc_ether {
   
   MOD_DIR=/lib/modules/${KERNEL}/kernel/drivers/net/usb/
   mkdir -p ${MOD_DIR}
-  cp ${SRC_DIR}/lib/cdc_ether.ko ${MOD_DIR}
+  cpf ${SRC_DIR}/lib/cdc_ether.ko ${MOD_DIR}
 
   if [ "${CONTAINER_MODE}" == "0" ]; then
     depmod
@@ -88,10 +108,13 @@ function install_service {
   LIB_SYSTEMD="${LIB_SYSTEMD}/lib/systemd"
   
   mkdir -p ${SERVICE_HOME}
-  cp -f ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
-  cp -f ${SRC_DIR}/systemd/*.sh ${SERVICE_HOME}
-  cp -f ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
-  cp -f ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
+  cpf ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
+  for f in `ls ${SRC_DIR}/systemd/*.sh`
+  do
+    cpf ${f} ${SERVICE_HOME}
+  done
+  cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
+  cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
   info "${SERVICE_NAME} service has been installed"
   REBOOT=1
