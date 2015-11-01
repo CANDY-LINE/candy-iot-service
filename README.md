@@ -119,7 +119,17 @@ root@binita:~# ifconfig enp0s17u1
 enp0s17u1: error fetching interface information: Device not found
 ```
 
+## モジュールリリース時の注意
+
+1. [`install.sh`](/install.sh)内の`VERSION=`にあるバージョンを修正してコミットする
+1. [`candy-iot.service`](/systemd/candy-iot.service)内の`Description`にあるバージョンを修正してコミットする
+1. 履歴を追記、修正してコミットする
+
 ## 履歴
+* 1.1.0
+  - Dockerコンテナー内で動作させるため、`KERNEL`の指定を行える機能を追加（例：`KERNEL=3.10.17-poky-edison+`）
+  - インストール時のモジュールコピー先をファイルに出力できる機能を追加
+
 * 1.0.1
   - デフォルトゲートウェイの設定が起動時に正しく行われない問題を修正
 

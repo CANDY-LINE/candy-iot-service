@@ -6,10 +6,16 @@ ROBOTMA_HOME=/opt/robotma
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=Robotma-com/candy-iot-service
-VERSION=1.0.1
+VERSION=1.1.0
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
-SRC_DIR=/tmp/candy-iot-service-${VERSION}
+SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
+
+KERNEL="${KERNEL:-$(uname -r)}"
+CONTAINER_MODE=0
+if [ "${KERNEL}" != "$(uname -r)" ]; then
+  CONTAINER_MODE=1
+fi
 
 REBOOT=0
 
@@ -27,6 +33,26 @@ function alert {
 
 function setup {
   [ "${DEBUG}" ] || rm -fr ${SRC_DIR}
+  if [ "${CP_DESTS}" != "" ]; then
+    rm -f "${CP_DESTS}"
+    touch "${CP_DESTS}"
+  fi
+}
+
+# $1 for the path to a file, $2 for the destination dir
+function cpf {
+  cp -f $1 $2
+  if [ "$?" == "0" ] && [ -f "${CP_DESTS}" ]; then
+    case "$2" in
+      */)
+      DEST="$2"
+      ;;
+      *)
+      DEST="$2/"
+      ;;
+    esac
+    echo "${DEST}$(basename $1)" >> "${CP_DESTS}"
+  fi
 }
 
 function download {
@@ -45,18 +71,21 @@ function install_cdc_ether {
   fi
   download
   
-  MOD_DIR=/lib/modules/$(uname -r)/kernel/drivers/net/usb/
+  MOD_DIR=/lib/modules/${KERNEL}/kernel/drivers/net/usb/
   mkdir -p ${MOD_DIR}
-  cp ${SRC_DIR}/lib/cdc_ether.ko ${MOD_DIR}
-  depmod
-  modprobe cdc_ether
-  RET=$?
-  if [ "${RET}" != "0" ]; then
-    err "Failed to load cdc_ether!"
-    rm -f ${MOD_DIR}/cdc_ether.ko
-    rm -f /etc/modules-load.d/cdc_ether.conf
-    teardown
-    exit 1
+  cpf ${SRC_DIR}/lib/cdc_ether.ko ${MOD_DIR}
+
+  if [ "${CONTAINER_MODE}" == "0" ]; then
+    depmod
+    modprobe cdc_ether
+    RET=$?
+    if [ "${RET}" != "0" ]; then
+      err "Failed to load cdc_ether!"
+      rm -f ${MOD_DIR}/cdc_ether.ko
+      rm -f /etc/modules-load.d/cdc_ether.conf
+      teardown
+      exit 1
+    fi
   fi
   
   echo "cdc_ether" > /etc/modules-load.d/cdc_ether.conf
@@ -72,13 +101,20 @@ function install_service {
   fi
   download
   
-  LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))/lib/systemd"
+  LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))"
+  if [ "${LIB_SYSTEMD}" == "/" ]; then
+    LIB_SYSTEMD=""
+  fi
+  LIB_SYSTEMD="${LIB_SYSTEMD}/lib/systemd"
   
   mkdir -p ${SERVICE_HOME}
-  cp -f ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
-  cp -f ${SRC_DIR}/systemd/*.sh ${SERVICE_HOME}
-  cp -f ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
-  cp -f ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
+  cpf ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
+  for f in `ls ${SRC_DIR}/systemd/*.sh`
+  do
+    cpf ${f} ${SERVICE_HOME}
+  done
+  cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
+  cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
   info "${SERVICE_NAME} service has been installed"
   REBOOT=1
@@ -86,7 +122,7 @@ function install_service {
 
 function teardown {
   [ "${DEBUG}" ] || rm -fr ${SRC_DIR}
-  if [ "${REBOOT}" == "1" ]; then
+  if [ "${CONTAINER_MODE}" == "0" ] && [ "${REBOOT}" == "1" ]; then
     alert "*** Please reboot the system! (enter 'reboot') ***"
   fi
 }
