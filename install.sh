@@ -125,6 +125,7 @@ function apply_patches {
   if [ "$?" == "0" ]; then
     cd /usr/bin/
     patch blink-led < ${SRC_DIR}/diff/blink-led.patch 
+    patch blink-led < ${SRC_DIR}/diff/blink-led.patch
     info "Modified LED Pin No. from 40 to 14"
   fi
 }
