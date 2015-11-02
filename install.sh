@@ -39,19 +39,22 @@ function setup {
   fi
 }
 
-# $1 for the path to a file, $2 for the destination dir
 function cpf {
   cp -f $1 $2
   if [ "$?" == "0" ] && [ -f "${CP_DESTS}" ]; then
-    case "$2" in
-      */)
-      DEST="$2"
-      ;;
-      *)
-      DEST="$2/"
-      ;;
-    esac
-    echo "${DEST}$(basename $1)" >> "${CP_DESTS}"
+    if [ -f "$2" ]; then
+      echo "$2" >> "${CP_DESTS}"
+    else
+      case "$2" in
+        */)
+        DEST="$2"
+        ;;
+        *)
+        DEST="$2/"
+        ;;
+      esac
+      echo "${DEST}$(basename $1)" >> "${CP_DESTS}"
+    fi
   fi
 }
 
