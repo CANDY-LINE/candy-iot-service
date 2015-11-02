@@ -42,6 +42,7 @@ function activate_lte {
 
 function monitor_default_gw {
   if [ -z "${IF_NAME}" ]; then
+    logger -s "The interface [${IF_NAME}] isn't ready. Shutting down."
     return
   fi
 

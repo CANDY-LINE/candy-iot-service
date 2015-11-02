@@ -6,7 +6,7 @@ ROBOTMA_HOME=/opt/robotma
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=Robotma-com/candy-iot-service
-VERSION=1.1.0
+VERSION=1.2.0
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
@@ -20,15 +20,15 @@ fi
 REBOOT=0
 
 function err {
-  echo -e "\033[91m[ERROR] $1\e[0m"
+  echo -e "\033[91m[ERROR] $1\033[0m"
 }
 
 function info {
-  echo -e "\033[92m[INFO] $1\e[0m"
+  echo -e "\033[92m[INFO] $1\033[0m"
 }
 
 function alert {
-  echo -e "\033[93m[ALERT] $1\e[0m"
+  echo -e "\033[93m[ALERT] $1\033[0m"
 }
 
 function setup {
@@ -39,19 +39,22 @@ function setup {
   fi
 }
 
-# $1 for the path to a file, $2 for the destination dir
 function cpf {
   cp -f $1 $2
   if [ "$?" == "0" ] && [ -f "${CP_DESTS}" ]; then
-    case "$2" in
-      */)
-      DEST="$2"
-      ;;
-      *)
-      DEST="$2/"
-      ;;
-    esac
-    echo "${DEST}$(basename $1)" >> "${CP_DESTS}"
+    if [ -f "$2" ]; then
+      echo "$2" >> "${CP_DESTS}"
+    else
+      case "$2" in
+        */)
+        DEST="$2"
+        ;;
+        *)
+        DEST="$2/"
+        ;;
+      esac
+      echo "${DEST}$(basename $1)" >> "${CP_DESTS}"
+    fi
   fi
 }
 
@@ -120,6 +123,15 @@ function install_service {
   REBOOT=1
 }
 
+function apply_patches {
+  md5sum -c ${SRC_DIR}/diff/blink-led.md5sum
+  if [ "$?" == "0" ]; then
+    cd /usr/bin/
+    patch blink-led < ${SRC_DIR}/diff/blink-led.patch
+    info "Modified LED Pin No. from 40 to 14"
+  fi
+}
+
 function teardown {
   [ "${DEBUG}" ] || rm -fr ${SRC_DIR}
   if [ "${CONTAINER_MODE}" == "0" ] && [ "${REBOOT}" == "1" ]; then
@@ -131,4 +143,5 @@ function teardown {
 setup
 install_cdc_ether
 install_service
+apply_patches
 teardown
