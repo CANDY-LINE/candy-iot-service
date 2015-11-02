@@ -130,7 +130,7 @@ enp0s17u1: error fetching interface information: Device not found
 
 ## 履歴
 * 1.2.0
-  - WiFi APモード動作時のLED点滅をCANDY-IoTボードでも点滅するように変更(GPIO 14)
+  - WiFi APモード動作時のLED点滅をCANDY-IoTボードのLED(GPIO 14)でも点滅するように変更
 
 * 1.1.0
   - Dockerコンテナー内で動作させるため、`KERNEL`の指定を行える機能を追加（例：`KERNEL=3.10.17-poky-edison+`）
