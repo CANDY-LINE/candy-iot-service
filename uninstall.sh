@@ -12,15 +12,15 @@ SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
 REBOOT=0
 
 function err {
-  echo -e "\033[91m[ERROR] $1\e[0m"
+  echo -e "\033[91m[ERROR] $1\033[0m"
 }
 
 function info {
-  echo -e "\033[92m[INFO] $1\e[0m"
+  echo -e "\033[92m[INFO] $1\033[0m"
 }
 
 function alert {
-  echo -e "\033[93m[ALERT] $1\e[0m"
+  echo -e "\033[93m[ALERT] $1\033[0m"
 }
 
 function uninstall_cdc_ether {
@@ -55,6 +55,15 @@ function uninstall_service {
   REBOOT=1
 }
 
+function revert_patches {
+  md5sum -c ${SRC_DIR}/diff/blink-led-rev.md5sum
+  if [ "$?" == "0" ]; then
+    cd /usr/bin/
+    patch -R blink-led < ${SRC_DIR}/diff/blink-led.patch 
+    info "Reverted LED Pin No. from 14 to 40"
+  fi
+}
+
 function teardown {
   [ "$(ls -A ${SERVICE_HOME})" ] || rmdir ${SERVICE_HOME}
   [ "$(ls -A ${ROBOTMA_HOME})" ] || rmdir ${ROBOTMA_HOME}
@@ -66,4 +75,5 @@ function teardown {
 # main
 uninstall_service
 uninstall_cdc_ether
+revert_patches
 teardown
