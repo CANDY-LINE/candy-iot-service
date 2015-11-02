@@ -1,7 +1,8 @@
 CANDY-IoT Board Service
 ===
 
-Intel Edison Yocto上で動作するCANDY-IoTボードを動作させるためのサービス。以下の機能を提供する。
+Intel Edison Yocto上で動作するCANDY-IoTボードを動作させるためのサービス。
+以下の機能を提供する。
 
 - APN設定済みのAM Telecom社製LTE/3Gモジュールを自動起動させる
 
@@ -38,7 +39,9 @@ root@binita:~#
 
 スクリプトをダウンロードしてインストール。
 ```bash
-root@binita:~# curl -L https://github.com/Robotma-com/candy-iot-service/raw/master/install.sh | bash
+root@binita:~# curl -L \
+  https://github.com/Robotma-com/candy-iot-service/raw/master/install.sh \
+  | bash
 [INFO] cdc_ether has been installed
 ln -s '/lib/systemd/system/candy-iot.service' '/etc/systemd/system/multi-user.target.wants/candy-iot.service'
 [INFO] candy-iot service has been installed
@@ -126,6 +129,9 @@ enp0s17u1: error fetching interface information: Device not found
 1. 履歴を追記、修正してコミットする
 
 ## 履歴
+* 1.2.0
+  - WiFi APモード動作時のLED点滅をCANDY-IoTボードでも点滅するように変更(GPIO 14)
+
 * 1.1.0
   - Dockerコンテナー内で動作させるため、`KERNEL`の指定を行える機能を追加（例：`KERNEL=3.10.17-poky-edison+`）
   - インストール時のモジュールコピー先をファイルに出力できる機能を追加
