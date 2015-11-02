@@ -124,7 +124,6 @@ function apply_patches {
   md5sum -c ${SRC_DIR}/diff/blink-led.md5sum
   if [ "$?" == "0" ]; then
     cd /usr/bin/
-    patch blink-led < ${SRC_DIR}/diff/blink-led.patch 
     patch blink-led < ${SRC_DIR}/diff/blink-led.patch
     info "Modified LED Pin No. from 40 to 14"
   fi
