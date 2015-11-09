@@ -35,6 +35,12 @@ function activate_lte {
   if [ "${RET}" == "0" ]; then
     ifconfig ${IF_NAME} up
     logger -s "The interface [${IF_NAME}] is up!"
+    if [ ! -e "/sys/bus/usb-serial/drivers/pl2303/ttyUSB0" ]; then
+      for m in ${MODULE_IDS}
+      do
+        echo "${m/:/ }" > /sys/bus/usb-serial/drivers/pl2303/new_id
+      done
+    fi
   else
     IF_NAME=""
   fi
