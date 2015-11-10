@@ -112,7 +112,9 @@ function install_service {
   
   mkdir -p ${SERVICE_HOME}
   cpf ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
-  for f in `ls ${SRC_DIR}/systemd/*.sh`
+  FILES=`ls ${SRC_DIR}/systemd/*.sh`
+  FILES="${FILES} `ls ${SRC_DIR}/systemd/*.py`"
+  for f in ${FILES}
   do
     cpf ${f} ${SERVICE_HOME}
   done
