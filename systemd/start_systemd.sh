@@ -35,7 +35,7 @@ function activate_lte {
   if [ "${RET}" == "0" ]; then
     ifconfig ${IF_NAME} up
     logger -s "The interface [${IF_NAME}] is up!"
-    if [ ! -e "/sys/bus/usb-serial/drivers/pl2303/ttyUSB0" ]; then
+    if [ ! -e "/sys/bus/usb-serial/drivers/pl2303/ttyUSB1" ]; then
       for m in ${MODULE_IDS}
       do
         echo "${m/:/ }" > /sys/bus/usb-serial/drivers/pl2303/new_id
@@ -44,27 +44,6 @@ function activate_lte {
   else
     IF_NAME=""
   fi
-}
-
-function monitor_default_gw {
-  if [ -z "${IF_NAME}" ]; then
-    logger -s "The interface [${IF_NAME}] isn't ready. Shutting down."
-    return
-  fi
-
-  while true
-  do
-    RET=`route | grep default | grep ${IF_NAME}`
-    RET=$?
-    if [ "${RET}" != "0" ]; then
-      MYDHPC_PID=`ps | grep "udhcpc -i ${IF_NAME}" | grep -v "grep" | xargs | cut -f 1 -d ' '`
-      if [ -n "${MYDHPC_PID}" ]; then
-        kill -9 ${MYDHPC_PID}
-      fi
-      udhcpc -i ${IF_NAME}
-    fi
-    sleep 5
-  done
 }
 
 # start banner
@@ -76,4 +55,4 @@ activate_lte
 # end banner
 logger -s "CANDY-IoT Board is initialized successfully!"
 
-monitor_default_gw
+/usr/bin/env python /opt/robotma/candy-iot/server.py /dev/ttyUSB1 /var/run/candy-iot.sock ${IF_NAME}
