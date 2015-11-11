@@ -321,7 +321,12 @@ def main(serial_port, sock_path, nic):
   monitor = Monitor(nic)
   monitor.start()
 
-  serial = SerialPort(serial_port, 115200)
+  if 'EMULATE_SERIALPORT' in os.environ and os.environ['EMULATE_SERIALPORT'] == "1":
+    print("Enabling SerialPort emulation...")
+    serial = SerialPortEmurator()
+  else:
+    serial = SerialPort(serial_port, 115200)
+
   server = SockServer(sock_path, serial)
   server.start()
 
