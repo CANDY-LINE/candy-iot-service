@@ -6,6 +6,7 @@ import json
 import socket
 import struct
 import os
+import sys
 
 # ciot apn ls ... list all apns
 # ciot apn set <name> <user> <password> ... add a given apn
@@ -16,6 +17,10 @@ else:
   SOCK_PATH = "/var/run/candy-iot.sock"
 
 def main(args):
+  if not os.path.exists(SOCK_PATH):
+    print("Error! CANDY-IoT Service isn't running")
+    sys.exit(1)
+
   sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
   sock.connect(SOCK_PATH)
 
