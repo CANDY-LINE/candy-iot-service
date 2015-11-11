@@ -46,11 +46,14 @@ function uninstall_service {
     systemctl stop ${SERVICE_NAME}
     systemctl disable ${SERVICE_NAME}
   fi
+
+  rm -f /usr/bin/ciot
   
   LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))/lib/systemd"
   rm -f ${LIB_SYSTEMD}/system/${SERVICE_NAME}.service
   rm -f ${SERVICE_HOME}/environment
   rm -f ${SERVICE_HOME}/*.sh
+  rm -f ${SERVICE_HOME}/*.py
   info "${SERVICE_NAME} has been uninstalled"
   REBOOT=1
 }
