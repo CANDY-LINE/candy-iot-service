@@ -217,7 +217,7 @@ class SockServer(threading.Thread):
   def run(self):
     self.sock.bind(self.sock_path)
     self.sock.listen(1)
-    unpacker = struct.Struct("I")
+    header_packer = struct.Struct("I")
     
     while True:
       try:
@@ -226,25 +226,24 @@ class SockServer(threading.Thread):
         connection.setblocking(0)
         
         # request
-        header = self.recv(connection, unpacker.size)
-        size = unpacker.unpack(header)
-        unpacker = struct.Struct("%is" % size)
-        cmd_json = self.recv(connection, unpacker.size)
+        header = self.recv(connection, header_packer.size)
+        size = header_packer.unpack(header)
+        unpacker_body = struct.Struct("%is" % size)
+        cmd_json = self.recv(connection, unpacker_body.size)
         cmd = json.loads(cmd_json)
 
         # response
         message = self.perform(cmd)
-        packer = struct.Struct("I")
         if message:
           size = len(message)
         else:
           size = 0
-        packed_header = packer.pack(size)
-        sock.sendall(packed_header)
+        packed_header = header_packer.pack(size)
+        connection.sendall(packed_header)
         if size > 0:
-          packer = struct.Struct("%is" % size)
-          packed_message = packer.pack(message)
-          sock.sendall(packed_message)
+          packer_body = struct.Struct("%is" % size)
+          packed_message = packer_body.pack(message)
+          connection.sendall(packed_message)
 
       finally:
         if 'connection' in locals():
