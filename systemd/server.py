@@ -298,9 +298,9 @@ class SockServer(threading.Thread):
     return json.dumps(message)
 
   def apn_set(self, name, user_id, password):
-    status, result = self.send_at("at+cgdcont=1,\"IPV4V6\",\"%s\",\"0.0.0.0\",0,0" % name)
+    status, result = self.send_at("AT+CGDCONT=1,\"IPV4V6\",\"%s\",\"0.0.0.0\",0,0" % name)
     if status == "OK":
-      status, result = self.send_at("at$qcpdpp=1,3,\"%s\",\"%s\"" % (password, user_id))
+      status, result = self.send_at("AT$QCPDPP=1,3,\"%s\",\"%s\"" % (password, user_id))
     message = {
       'status': status,
       'result': result
