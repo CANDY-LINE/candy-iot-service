@@ -112,13 +112,16 @@ function install_service {
   
   mkdir -p ${SERVICE_HOME}
   cpf ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
-  for f in `ls ${SRC_DIR}/systemd/*.sh`
+  FILES=`ls ${SRC_DIR}/systemd/*.sh`
+  FILES="${FILES} `ls ${SRC_DIR}/systemd/*.py`"
+  for f in ${FILES}
   do
     cpf ${f} ${SERVICE_HOME}
   done
   cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
   cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
+  cpf ${SRC_DIR}/bin/ciot /usr/bin
   info "${SERVICE_NAME} service has been installed"
   REBOOT=1
 }
@@ -128,7 +131,7 @@ function apply_patches {
   if [ "$?" == "0" ]; then
     cd /usr/bin/
     patch blink-led < ${SRC_DIR}/diff/blink-led.patch
-    info "Modified LED Pin No. from 40 to 14"
+    info "Modified Blinking LED Pin No. from 40 to 14"
   fi
 }
 

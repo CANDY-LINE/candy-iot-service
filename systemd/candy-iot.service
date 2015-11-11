@@ -6,6 +6,7 @@ Before=
 [Service]
 Type=simple
 RemainAfterExit=no
+Restart=on-failure
 ExecStart=/opt/robotma/candy-iot/start_systemd.sh
 ExecStop=/opt/robotma/candy-iot/stop_systemd.sh
 Environment="HOME=/opt/robotma/candy-iot/"
