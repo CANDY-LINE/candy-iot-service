@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import argparse
+import json
+import socket
+import struct
+import os
+
+# ciot apn ls ... list all apns
+# ciot apn set <name> <user> <password> ... add a given apn
+
+if 'SOCK_PATH' in os.environ:
+  SOCK_PATH = os.environ['SOCK_PATH']
+else:
+  SOCK_PATH = "/var/run/candy-iot.sock"
+
+def main(args):
+  sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+  sock.connect(SOCK_PATH)
+
+  if args.category == "apn":
+    try:
+      # request
+      packer = struct.Struct("I")
+      cmd_json = json.dumps(vars(args))
+      size = len(cmd_json)
+      packed_header = packer.pack(size)
+      sock.sendall(packed_header)
+      packer = struct.Struct("%is" % size)
+      packed_json = packer.pack(cmd_json)
+      sock.sendall(packed_json)
+      
+      # response
+      packer = struct.Struct("I")
+      packed_result = sock.recv(packer.size)
+      result = packer.unpack(packed_result)
+
+      # result
+      if result == 0:
+        print("OK")
+      else:
+        packer = struct.Struct("%is" % result)
+        packed_message = sock.recv(packer.size)
+        message_json = packer.unpack(packed_message)
+        message = json.loads(message_json[0])
+        print(message['status'])
+        if message['result']:
+          print(json.dumps(message['result'], indent=2))
+
+    finally:
+      sock.close()
+  else:
+    raise ValueError('Unsupported category')
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser(description="CANDY-IoT CLI")
+  categories = parser.add_subparsers(title="categories", dest="category")
+  parser_apn = categories.add_parser("apn", help = "Manipulate APN settings")
+  apn_commands = parser_apn.add_subparsers(title="APN actions", dest="action")
+
+  parser_apn_ls = apn_commands.add_parser ("ls", help = "List all APNs")
+  parser_apn_set = apn_commands.add_parser ("set", help = "Set a new APN")
+  parser_apn_set.add_argument ("-n", "--name", type = str, required = True, help = "APN")
+  parser_apn_set.add_argument ("-u", "--user-id", type = str, required = True, help = "User ID")
+  parser_apn_set.add_argument ("-p", "--password", type = str, required = True, help = "User Password")
+
+  args = parser.parse_args()
+  main(args)
