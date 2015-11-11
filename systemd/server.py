@@ -218,6 +218,7 @@ class SockServer(threading.Thread):
     self.sock.bind(self.sock_path)
     self.sock.listen(1)
     header_packer = struct.Struct("I")
+    print("Listening to the socket[%s]...." % self.sock_path)
     
     while True:
       try:
@@ -271,12 +272,25 @@ class SockServer(threading.Thread):
         status = line
       elif line is None:
         status = "Unknown"
-      else:
+      elif line.strip() != "":
         result += line + "\n"
-    return (status, result)
+    return (status, result.strip())
 
   def apn_ls(self):
-    status, result = self.send_at("at+cgdcont?")
+    status, result = self.send_at("AT+CGDCONT?")
+    if status == "OK":
+      apn_list = result.split("\n")
+      status, result = self.send_at("AT$QCPDPP?")
+      if status == "OK":
+        result = {
+          'apn_list': apn_list,
+          'creds_list': result.split("\n")
+        }
+      else:
+        result = {
+          'apn_list': apn_list,
+          'result': result
+        }
     message = {
       'status': status,
       'result': result
