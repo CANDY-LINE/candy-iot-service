@@ -11,6 +11,7 @@ import termios
 import threading
 import time
 import subprocess
+import atexit
 
 # sys.argv[0] ... Serial Port
 # sys.argv[1] ... The path to socket file, e.g. /var/run/candy-iot.sock
@@ -221,12 +222,16 @@ class SockServer(threading.Thread):
     }
     return json.dumps(message)
 
-def main(serial_port, sock_path, nic):
+def delete_sock_path(sock_path):
   try:
     os.unlink(sock_path)
   except OSError:
     if os.path.exists(sock_path):
       raise
+
+def main(serial_port, sock_path, nic):
+  delete_sock_path(sock_path)
+  atexit.register(delete_sock_path, sock_path)
 
   monitor = Monitor(nic)
   monitor.start()
