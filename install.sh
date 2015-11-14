@@ -132,6 +132,13 @@ function apply_patches {
     cd /usr/bin/
     patch blink-led < ${SRC_DIR}/diff/blink-led.patch
     info "Modified Blinking LED Pin No. from 40 to 14"
+
+    mkdir -p ${SERVICE_HOME}/diff
+    FILES=`ls ${SRC_DIR}/diff/*`
+    for f in ${FILES}
+    do
+      cpf ${f} ${SERVICE_HOME}/diff
+    done
   fi
 }
 
