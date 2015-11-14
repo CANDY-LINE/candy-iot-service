@@ -256,6 +256,15 @@ class SockServer(threading.Thread):
         return self.apn_ls()
       elif cmd['action'] == "set":
         return self.apn_set(cmd['name'], cmd['user_id'], cmd['password'])
+    elif cmd['category'] == "network":
+      if cmd['action'] == "show":
+        return self.network_show()
+    elif cmd['category'] == "sim":
+      if cmd['action'] == "show":
+        return self.sim_show()
+    elif cmd['category'] == "modem":
+      if cmd['action'] == "show":
+        return self.modem_show()
     
     return "Unknown Command"
 
@@ -306,6 +315,81 @@ class SockServer(threading.Thread):
       'result': result
     }
     return json.dumps(message)
+
+  def network_show(self):
+    status, result = self.send_at("AT+CSQ")
+    rssi = "Unknown"
+    state = "Unknown"
+    if status == "OK":
+      rssi_level = int(result[5:].split(",")[0])
+      if rssi_level == 0:
+        rssi = "-113 dBm-"
+      elif rssi_level == 1:
+        rssi = "-111 dBm"
+      elif rssi_level <= 30:
+        rssi = "%i dBm" % (-109 + (rssi_level - 2) * 2)
+      elif rssi_level == 31:
+        rssi = "-51 dBm+"
+      else:
+        rssi = "No Siganl"
+      status, result = self.send_at("AT+CPAS")
+      if status == "OK":
+        state_level = int(result[6:])
+        if state_level == 4:
+          state = "Online"
+        else:
+          state = "Offline"
+    message = {
+      'status': status,
+      'result': {
+        'rssi': rssi,
+        'network': state
+      }
+    }
+    return json.dumps(message)
+
+  def sim_show(self):
+    status, result = self.send_at("AT+CNUM")
+    msisdn = "No SIM"
+    imsi = "No SIM"
+    if status == "OK":
+      msisdn = result[6:].split(",")[1].translate(None, '"')
+      if msisdn != "":
+        status, result = self.send_at("AT+CIMI")
+        if status == "OK":
+          imsi = result
+    message = {
+      'status': status,
+      'result': {
+        'msisdn': msisdn,
+        'imsi': imsi
+      }
+    }
+    return json.dumps(message)
+
+  def modem_show(self):
+    status, result = self.send_at("ATI")
+    man = "Unknown"
+    mod = "Unknown"
+    rev = "Unknown"
+    imei = "Unknown"
+    if status == "OK":
+      info = result.split("\n")
+      man = info[0][14:]
+      mod = info[1][7:]
+      rev = info[2][10:]
+      imei = info[3][6:]
+    message = {
+      'status': status,
+      'result': {
+        'manufacturer': man,
+        'model': mod,
+        'revision': rev,
+        'imei': imei,
+      }
+    }
+    return json.dumps(message)
+    
 
 def delete_sock_path(sock_path):
   try:
