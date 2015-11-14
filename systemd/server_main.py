@@ -214,22 +214,27 @@ class SockServer(threading.Thread):
 
   def apn_ls(self):
     status, result = self.send_at("AT+CGDCONT?")
+    apn_list = []
     if status == "OK":
-      apn_list = result.split("\n")
+      name_list = map(lambda e: e[10:].split(",")[2].translate(None, '"'), result.split("\n"))
       status, result = self.send_at("AT$QCPDPP?")
+      creds_list = []
       if status == "OK":
-        result = {
-          'apn_list': apn_list,
-          'creds_list': result.split("\n")
+        creds_list = map(lambda e: e[2].translate(None, '"'),
+          filter(lambda e: len(e) > 2,
+            map(lambda e: e[9:].split(","), result.split("\n"))))
+      for i in range(len(name_list)):
+        apn = {
+          'apn': name_list[i]
         }
-      else:
-        result = {
-          'apn_list': apn_list,
-          'result': result
-        }
+        if i < len(creds_list):
+          apn['user'] = creds_list[i]
+        apn_list.append(apn)
     message = {
       'status': status,
-      'result': result
+      'result': {
+        'apns': apn_list
+      }
     }
     return json.dumps(message)
 
@@ -334,6 +339,7 @@ def main(serial_port, sock_path, nic):
 
   if 'EMULATE_SERIALPORT' in os.environ and os.environ['EMULATE_SERIALPORT'] == "1":
     print("Enabling SerialPort emulation...")
+    from emulator_serialport import SerialPortEmurator
     serial = SerialPortEmurator()
   else:
     serial = SerialPort(serial_port, 115200)
