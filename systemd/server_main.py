@@ -197,7 +197,7 @@ class SockServer(threading.Thread):
     return "Unknown Command"
 
   def send_at(self, cmd):
-    self.serial.write("%s\r\n" % cmd)
+    self.serial.write("%s\r" % cmd)
     self.serial.read_line() # echo back
     self.serial.read_line() # empty line
     self.serial.read_line() # empty line
