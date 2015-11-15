@@ -136,8 +136,8 @@ class SockServer(threading.Thread):
     self.debug = False
   
   def recv(self, connection, size):
-    ready = select.select([connection], [], [], 5)
-    if ready[0]:
+    ready, _, _ = select.select([connection], [], [], 5)
+    if ready:
       return connection.recv(size)
     else:
       raise IOError("recv Timeout")
