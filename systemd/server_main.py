@@ -133,6 +133,7 @@ class SockServer(threading.Thread):
     self.sock_path = sock_path
     self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     self.serial = serial
+    self.debug = False
   
   def recv(self, connection, size):
     ready = select.select([connection], [], [], 5)
@@ -210,6 +211,8 @@ class SockServer(threading.Thread):
         status = "Unknown"
       elif line.strip() != "":
         result += line + "\n"
+    if self.debug:
+      print("cmd:[%s] => status:[%s], result:[%s]" % (cmd, status, result))
     return (status, result.strip())
 
   def apn_ls(self):
@@ -345,6 +348,8 @@ def main(serial_port, sock_path, nic):
     serial = SerialPort(serial_port, 115200)
 
   server = SockServer(sock_path, serial)
+  if 'DEBUG' in os.environ and os.environ['DEBUG'] == "1":
+    server.debug = True
   server.start()
 
   monitor.join()
