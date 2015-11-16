@@ -1,17 +1,26 @@
 CANDY-IoT Board Service
 ===
 
-Intel Edison Yocto上で動作するCANDY-IoTボードを動作させるためのサービス。
-以下の機能を提供する。
+本サービスは、Intel Edison Yocto上で動作するCANDY-IoTボードを動作させるためのサービスです。
 
-- APN設定済みのAM Telecom社製LTE/3Gモジュールを自動起動させる
+このサービスでは、以下の機能を提供しています。
+
+- AM Telecom社製LTE/3Gモジュールの自動起動
+- AM Telecom社製LTE/3Gモジュールを操作するコマンドラインツール
+  - APN設定、表示
+  - LTE/3Gネットワーク状態表示
+  - SIM状態表示
+  - モデム情報表示
+- Wi-Fi APモード起動時にCANDY-IoTボード上でLEDを点灯
 
 ## 対応機器とファームウェア/OS
  - Intel Edison
  - Release 2.1 Yocto complete image (poky-yocto)
 
 ## インストール方法
-Edisonにログインし、WiFiを起動させる。WiFiを設定していないときは、`configure-edison --wifi`にて設定すること。
+**インストールには、インターネットに接続できるWi-Fiのアクセスポイントが必要です。**
+
+まず最初にEdisonにログインします。続いて、WiFiを起動させてください。もしWiFiを設定していないときは、`configure-edison --wifi`にて、Wi−Fiの設定を行ってください。
 
 ```bash
 Poky (Yocto Project Reference Distro) 1.7.2 binita ttyMFD2
@@ -21,7 +30,9 @@ Password:
 root@binita:~# ifconfig wlan0 up
 ```
 
-Edisonにてインターネットにアクセスできることを確認する。
+Wi-Fi起動後、Edisonにてインターネットにアクセスできることを確認してください。
+以下のようなcURLコマンドを実行して結果を得られれば問題ありません。
+
 ```bash
 root@binita:~# curl -i -L -X HEAD http://www.robotma.com/
 HTTP/1.1 200 OK
@@ -37,7 +48,8 @@ curl: (18) transfer closed with 6471 bytes remaining to read
 root@binita:~# 
 ```
 
-スクリプトをダウンロードしてインストール。
+GitHub上にあるスクリプトをダウンロードしてインストールします。
+
 ```bash
 root@binita:~# curl -L \
   https://github.com/Robotma-com/candy-iot-service/raw/master/install.sh \
@@ -48,12 +60,13 @@ ln -s '/lib/systemd/system/candy-iot.service' '/etc/systemd/system/multi-user.ta
 [ALERT] *** Please reboot the system! (enter 'reboot') ***
 ```
 
-上記のようにメッセージが出たら再起動する。
+インストール完了後、上記のようにメッセージが出ますので、以下のコマンドにて再起動させてください。
+
 ```bash
 root@binita:~# reboot
 ```
 
-再起動後、動作を確認する。
+再起動後、動作状況を確認します。
 
 ```bash
 root@binita:~# systemctl status candy-iot
@@ -78,7 +91,7 @@ Oct 30 09:20:31 binita systemd[1]: Started CANDY-IoT Board Service.
 Hint: Some lines were ellipsized, use -l to show in full.
 ```
 
-上記の`enp0s17u1`が、LTE/3Gモジュールのネットワークインタフェースとなる。
+なお上記の`enp0s17u1`が、LTE/3Gモジュールのネットワークインタフェースとなります。
 
 ```bash
 root@binita:~# ifconfig enp0s17u1
@@ -92,7 +105,9 @@ enp0s17u1 Link encap:Ethernet  HWaddr 99:99:99:99:99:99
 ```
 
 ## アンインストール方法
-`/opt/robotma/candy-iot/uninstall.sh`を実行する。
+アンインストールを行うためには、専用のスクリプトを実行します。このスクリプトは動作中のサービスを停止し、関連ファイルをすべて削除します。
+
+まず`/opt/robotma/candy-iot/uninstall.sh`を実行します。
 
 ```bash
 root@binita:~# /opt/robotma/candy-iot/uninstall.sh
@@ -101,12 +116,13 @@ root@binita:~# /opt/robotma/candy-iot/uninstall.sh
 [ALERT] *** Please reboot the system! (enter 'reboot') ***
 ```
 
-上記のようにメッセージが出たら再起動する。
+上記のようにメッセージが出たら再起動してください。
+
 ```bash
 root@binita:~# reboot
 ```
 
-再起動後、サービスが削除されたことを確認する。
+再起動後、サービスが削除されたことを確認します。
 
 ```bash
 root@binita:~# systemctl status candy-iot 
@@ -115,7 +131,7 @@ root@binita:~# systemctl status candy-iot
    Active: inactive (dead)
 ```
 
-LTE/3Gモジュールのネットワークインタフェースも見えなくなる。
+削除後は、LTE/3Gモジュールのネットワークインタフェースも見えなくなります。
 
 ```bash
 root@binita:~# ifconfig enp0s17u1
