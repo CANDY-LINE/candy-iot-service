@@ -254,32 +254,36 @@ class SockServer(threading.Thread):
 
   def network_show(self):
     status, result = self.send_at("AT+CSQ")
-    rssi = "Unknown"
-    state = "Unknown"
+    rssi = ""
+    network = "UNKNOWN"
+    rssi_desc = ""
     if status == "OK":
       rssi_level = int(result[5:].split(",")[0])
       if rssi_level == 0:
-        rssi = "-113 dBm-"
+        rssi = "-113"
+        rssi_desc = "OR_LESS"
       elif rssi_level == 1:
-        rssi = "-111 dBm"
+        rssi = "-111"
       elif rssi_level <= 30:
-        rssi = "%i dBm" % (-109 + (rssi_level - 2) * 2)
+        rssi = "%i" % (-109 + (rssi_level - 2) * 2)
       elif rssi_level == 31:
-        rssi = "-51 dBm+"
+        rssi = "-51"
+        rssi_desc = "OR_MORE"
       else:
-        rssi = "No Siganl"
+        rssi = "NO_SIGANL"
       status, result = self.send_at("AT+CPAS")
       if status == "OK":
         state_level = int(result[6:])
         if state_level == 4:
-          state = "Online"
+          network = "ONLINE"
         else:
-          state = "Offline"
+          network = "OFFLINE"
     message = {
       'status': status,
       'result': {
         'rssi': rssi,
-        'network': state
+        'rssiDesc': rssi_desc,
+        'network': network
       }
     }
     return json.dumps(message)
