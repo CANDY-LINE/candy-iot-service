@@ -198,6 +198,7 @@ class SockServer(threading.Thread):
 
   def send_at(self, cmd):
     self.serial.write("%s\r" % cmd)
+    time.sleep(0.01)
     self.serial.read_line() # echo back
     self.serial.read_line() # empty line
     self.serial.read_line() # empty line
