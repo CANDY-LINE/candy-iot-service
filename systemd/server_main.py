@@ -270,7 +270,7 @@ class SockServer(threading.Thread):
         rssi = "-51"
         rssi_desc = "OR_MORE"
       else:
-        rssi = "NO_SIGANL"
+        rssi_desc = "NO_SIGANL"
       status, result = self.send_at("AT+CPAS")
       if status == "OK":
         state_level = int(result[6:])
