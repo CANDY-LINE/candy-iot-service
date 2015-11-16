@@ -285,20 +285,21 @@ class SockServer(threading.Thread):
     return json.dumps(message)
 
   def sim_show(self):
-    status, result = self.send_at("AT+CNUM")
-    msisdn = "No SIM"
-    imsi = "No SIM"
+    state = "SIM_STATE_ABSENT"
+    msisdn = ""
+    imsi = ""
+    status, result = self.send_at("AT+CIMI")
     if status == "OK":
+      imsi = result
+      state = "SIM_STATE_READY"
+      status, result = self.send_at("AT+CNUM")
       msisdn = result[6:].split(",")[1].translate(None, '"')
-      if msisdn != "":
-        status, result = self.send_at("AT+CIMI")
-        if status == "OK":
-          imsi = result
     message = {
       'status': status,
       'result': {
         'msisdn': msisdn,
-        'imsi': imsi
+        'imsi': imsi,
+        'state': state
       }
     }
     return json.dumps(message)
