@@ -209,7 +209,7 @@ class SockServer(threading.Thread):
       if line == "OK" or line == "ERROR":
         status = line
       elif line is None:
-        status = "Unknown"
+        status = "UNKNOWN"
       elif line.strip() != "":
         result += line + "\n"
     if self.debug:
@@ -306,10 +306,10 @@ class SockServer(threading.Thread):
 
   def modem_show(self):
     status, result = self.send_at("ATI")
-    man = "Unknown"
-    mod = "Unknown"
-    rev = "Unknown"
-    imei = "Unknown"
+    man = "UNKNOWN"
+    mod = "UNKNOWN"
+    rev = "UNKNOWN"
+    imei = "UNKNOWN"
     if status == "OK":
       info = result.split("\n")
       man = info[0][14:]
