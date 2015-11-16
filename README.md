@@ -11,7 +11,7 @@ CANDY-IoT Board Service
   - LTE/3Gネットワーク状態表示
   - SIM状態表示
   - モデム情報表示
-- Wi-Fi APモード起動時にCANDY-IoTボード上でLEDを点灯
+- Wi-Fi APモード起動時にCANDY-IoTボード上でLEDを点滅
 
 ## 対応機器とファームウェア/OS
  - Intel Edison
