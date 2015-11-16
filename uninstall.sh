@@ -46,21 +46,28 @@ function uninstall_service {
     systemctl stop ${SERVICE_NAME}
     systemctl disable ${SERVICE_NAME}
   fi
+
+  rm -f /usr/bin/ciot
   
   LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))/lib/systemd"
   rm -f ${LIB_SYSTEMD}/system/${SERVICE_NAME}.service
   rm -f ${SERVICE_HOME}/environment
   rm -f ${SERVICE_HOME}/*.sh
+  rm -f ${SERVICE_HOME}/*.py
+  rm -f ${SERVICE_HOME}/*.pyc
   info "${SERVICE_NAME} has been uninstalled"
   REBOOT=1
 }
 
 function revert_patches {
-  md5sum -c ${SRC_DIR}/diff/blink-led-rev.md5sum
-  if [ "$?" == "0" ]; then
-    cd /usr/bin/
-    patch -R blink-led < ${SRC_DIR}/diff/blink-led.patch 
-    info "Reverted LED Pin No. from 14 to 40"
+  if [ -d "${SERVICE_HOME}/diff" ]; then
+    md5sum -c ${SERVICE_HOME}/diff/blink-led-rev.md5sum
+    if [ "$?" == "0" ]; then
+      cd /usr/bin/
+      patch -R blink-led < ${SERVICE_HOME}/diff/blink-led.patch 
+      info "Reverted LED Pin No. from 14 to 40"
+    fi
+    rm -fr ${SERVICE_HOME}/diff
   fi
 }
 

@@ -1,11 +1,12 @@
 [Unit]
-Description=CANDY-IoT Board Service (v1.2.0)
+Description=CANDY-IoT Board Service (v1.3.0)
 After=wpa_supplicant.service
 Before=
 
 [Service]
 Type=simple
 RemainAfterExit=no
+Restart=on-failure
 ExecStart=/opt/robotma/candy-iot/start_systemd.sh
 ExecStop=/opt/robotma/candy-iot/stop_systemd.sh
 Environment="HOME=/opt/robotma/candy-iot/"

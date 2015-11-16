@@ -6,7 +6,7 @@ ROBOTMA_HOME=/opt/robotma
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=Robotma-com/candy-iot-service
-VERSION=1.2.0
+VERSION=1.3.0
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
@@ -112,13 +112,16 @@ function install_service {
   
   mkdir -p ${SERVICE_HOME}
   cpf ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
-  for f in `ls ${SRC_DIR}/systemd/*.sh`
+  FILES=`ls ${SRC_DIR}/systemd/*.sh`
+  FILES="${FILES} `ls ${SRC_DIR}/systemd/server_*.py`"
+  for f in ${FILES}
   do
     cpf ${f} ${SERVICE_HOME}
   done
   cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
   cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
+  cpf ${SRC_DIR}/bin/ciot /usr/bin
   info "${SERVICE_NAME} service has been installed"
   REBOOT=1
 }
@@ -128,7 +131,14 @@ function apply_patches {
   if [ "$?" == "0" ]; then
     cd /usr/bin/
     patch blink-led < ${SRC_DIR}/diff/blink-led.patch
-    info "Modified LED Pin No. from 40 to 14"
+    info "Modified Blinking LED Pin No. from 40 to 14"
+
+    mkdir -p ${SERVICE_HOME}/diff
+    FILES=`ls ${SRC_DIR}/diff/*`
+    for f in ${FILES}
+    do
+      cpf ${f} ${SERVICE_HOME}/diff
+    done
   fi
 }
 
