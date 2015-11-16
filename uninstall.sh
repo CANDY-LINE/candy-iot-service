@@ -67,6 +67,7 @@ function revert_patches {
       patch -R blink-led < ${SERVICE_HOME}/diff/blink-led.patch 
       info "Reverted LED Pin No. from 14 to 40"
     fi
+    rm -fr ${SERVICE_HOME}/diff
   fi
 }
 
