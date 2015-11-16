@@ -138,6 +138,81 @@ root@binita:~# ifconfig enp0s17u1
 enp0s17u1: error fetching interface information: Device not found
 ```
 
+## コマンドラインツール使用方法
+LTE/3Gモジュールの情報を取得したり、設定したりするため、`ciot`というコマンドを利用します。
+このコマンドは、`/usr/bin`にインストールされるため、インストール完了後（再起動後）にすぐ利用することができます。
+
+### APNの表示
+現在設定されているAPNを表示します。パスワードは表示されません。
+
+```bash
+root@edison:~# ciot apn ls
+{
+  "apns": [
+    {
+      "apn": "iijmio.jp", 
+      "user": "iij"
+    }
+  ]
+}
+```
+
+### APNの設定
+APNを設定します。単一のAPNのみ設定することができます。
+
+```bash
+root@edison:~# ciot apn set -n APN名 -u ユーザーID -p パスワード
+```
+
+### ネットワーク状態の表示
+モバイルネットワークの状態を表示します。Wi-Fiの状態ではありません。
+rssiの単位は`dBm`となります。結果文字列の`rssiDesc`には以下の値が入ります。
+
+1. `"OR_LESS"` ... **`rssi`の値以下**であることを示す
+1. `"OR_MORE"` ... **`rssi`の値以上**であることを示す
+1. `"NO_SIGANL"` ... 圏外
+1. `""` ... `rssi`の数値通り
+
+`network`のプロパティは、`ONLINE`、`OFFLINE`または`UNKNOWN`が入ります。
+
+```bash
+root@edison:~# ciot network show
+{
+  "rssi": "-85", 
+  "network": "ONLINE", 
+  "rssiDesc": ""
+}
+```
+
+### SIM状態の表示
+SIMの状態を表示します。
+結果文字列の`state`には、以下の文字列が入ります。
+
+1. `SIM_STATE_READY` ... SIMが認識されている
+1. `SIM_STATE_ABSENT` ... SIMが認識されていない
+
+```bash
+root@edison:~# ciot sim show
+{
+  "msisdn": "11111111111", 
+  "state": "SIM_STATE_READY", 
+  "imsi": "440111111111111"
+}
+```
+
+### モデム状態の表示
+モデム状態を表示します。
+
+```bash
+root@edison:~# ciot modem show
+{
+  "imei": "999999999999999", 
+  "model": "AMP5200", 
+  "manufacturer": "AM Telecom", 
+  "revision": "14-01"
+}
+```
+
 ## モジュールリリース時の注意
 
 1. [`install.sh`](/install.sh)内の`VERSION=`にあるバージョンを修正してコミットする
