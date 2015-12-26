@@ -62,7 +62,12 @@ CC = 6
 def bps_to_termios_sym(bps):
   return BPS_SYMS[bps]
 
-  
+# For local debugging:
+# import server_main
+# serial = server_main.SerialPort("/dev/ttyUSB1", 115200)
+# server = server_main.SockServer("/var/run/candy-iot.sock", serial)
+# server.debug = True
+# server.apn_ls()
 class SerialPort:
 
   def __init__(self, serialport, bps):
@@ -196,16 +201,25 @@ class SockServer(threading.Thread):
     
     return "Unknown Command"
 
+  def read_line(self):
+    line = self.serial.read_line()
+    if self.debug:
+      print("[modem:IN] => [%s]" % line)
+    return line
+
   def send_at(self, cmd):
-    self.serial.write("%s\r" % cmd)
-    time.sleep(0.01)
-    self.serial.read_line() # echo back
-    self.serial.read_line() # empty line
-    self.serial.read_line() # empty line
+    line = "%s\r" % cmd
+    if self.debug:
+      print("[modem:OUT] => [%s]" % line)
+    self.serial.write(line)
+    time.sleep(0.1)
+    self.read_line() # echo back
+    self.read_line() # empty line
+    self.read_line() # empty line
     result = ""
     status = None
     while not status:
-      line = self.serial.read_line()
+      line = self.read_line()
       if line == "OK" or line == "ERROR":
         status = line
       elif line is None:
