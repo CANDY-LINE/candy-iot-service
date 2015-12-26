@@ -212,7 +212,7 @@ class SockServer(threading.Thread):
     if self.debug:
       print("[modem:OUT] => [%s]" % line)
     self.serial.write(line)
-    time.sleep(0.01)
+    time.sleep(0.1)
     self.read_line() # echo back
     self.read_line() # empty line
     self.read_line() # empty line
