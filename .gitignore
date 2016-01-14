@@ -1,4 +1,4 @@
 *.tgz
 *.log
-*.txt
 *.pyc
+*.service

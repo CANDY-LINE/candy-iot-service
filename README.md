@@ -3,10 +3,10 @@ CANDY IoT Board Service
 
 本サービスは、Intel Edison Yocto上で動作するCANDY IoTボードを動作させるためのサービスです。
 
-![CANDY IoT Image(1)](images/CANDY IoT-1.jpg "CANDY IoT Image 1")
+![CANDY IoT Image(1)](images/CANDY-IoT-1.jpg "CANDY IoT Image 1")
 
 
-![CANDY IoT Image(2)](images/CANDY IoT-2.jpg "CANDY IoT Image 2")
+![CANDY IoT Image(2)](images/CANDY-IoT-2.jpg "CANDY IoT Image 2")
 
 このサービスでは、以下の機能を提供しています。
 
@@ -221,10 +221,14 @@ root@edison:~# ciot modem show
 ## モジュールリリース時の注意
 
 1. [`install.sh`](/install.sh)内の`VERSION=`にあるバージョンを修正してコミットする
-1. [`candy-iot.service`](/systemd/candy-iot.service)内の`Description`にあるバージョンを修正してコミットする
 1. 履歴を追記、修正してコミットする
 
 ## 履歴
+* 1.4.0
+  - このサービスのソフトウェアバージョンを表示するコマンドを追加
+  - 製品名の表記方法を変更
+  - バージョン指定を一箇所に集約
+
 * 1.3.1
   - AM Telecomモジュールモデムのウェイト時間が短いため、一部のコマンドについてモデムが応答を返す前に結果を諦めていたため、ウェイト時間を延長
 

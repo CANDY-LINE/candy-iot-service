@@ -6,7 +6,7 @@ ROBOTMA_HOME=/opt/robotma
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=Robotma-com/candy-iot-service
-VERSION=1.3.1
+VERSION=1.4.0
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
@@ -118,6 +118,10 @@ function install_service {
   do
     cpf ${f} ${SERVICE_HOME}
   done
+
+  cp -f ${SRC_DIR}/systemd/${SERVICE_NAME}.service.txt ${SRC_DIR}/systemd/${SERVICE_NAME}.service
+  sed -i -e "s/%VERSION%/${VERSION//\//\\/}/g" ${SRC_DIR}/systemd/${SERVICE_NAME}.service
+
   cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
   cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
