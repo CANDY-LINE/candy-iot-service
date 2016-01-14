@@ -118,6 +118,10 @@ function install_service {
   do
     cpf ${f} ${SERVICE_HOME}
   done
+
+  cp -f ${SRC_DIR}/systemd/${SERVICE_NAME}.service.txt ${SRC_DIR}/systemd/${SERVICE_NAME}.service
+  sed -i -e "s/%VERSION%/${VERSION//\//\\/}/g" ${SRC_DIR}/systemd/${SERVICE_NAME}.service
+
   cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
   cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
