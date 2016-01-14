@@ -1,12 +1,12 @@
-CANDY-IoT Board Service
+CANDY IoT Board Service
 ===
 
-本サービスは、Intel Edison Yocto上で動作するCANDY-IoTボードを動作させるためのサービスです。
+本サービスは、Intel Edison Yocto上で動作するCANDY IoTボードを動作させるためのサービスです。
 
-![CANDY-IoT Image(1)](images/CANDY-IoT-1.jpg "CANDY-IoT Image 1")
+![CANDY IoT Image(1)](images/CANDY IoT-1.jpg "CANDY IoT Image 1")
 
 
-![CANDY-IoT Image(2)](images/CANDY-IoT-2.jpg "CANDY-IoT Image 2")
+![CANDY IoT Image(2)](images/CANDY IoT-2.jpg "CANDY IoT Image 2")
 
 このサービスでは、以下の機能を提供しています。
 
@@ -16,7 +16,7 @@ CANDY-IoT Board Service
   - LTE/3Gネットワーク状態表示
   - SIM状態表示
   - モデム情報表示
-- Wi-Fi APモード起動時にCANDY-IoTボード上でLEDを点滅
+- Wi-Fi APモード起動時にCANDY IoTボード上でLEDを点滅
 
 ## 対応機器とファームウェア/OS
  - Intel Edison
@@ -75,7 +75,7 @@ root@binita:~# reboot
 
 ```bash
 root@binita:~# systemctl status candy-iot
-● candy-iot.service - CANDY-IoT Board Service
+● candy-iot.service - CANDY IoT Board Service
    Loaded: loaded (/lib/systemd/system/candy-iot.service; enabled)
    Active: active (exited) since Fri 2015-10-30 09:20:31 UTC; 32s ago
   Process: 268 ExecStart=/opt/robotma/candy-iot/start_systemd.sh (code=exited, status=0/SUCCESS)
@@ -90,9 +90,9 @@ Oct 30 09:20:31 binita start_systemd.sh[268]: Lease of 192.168.225.37 obtain...0
 Oct 30 09:20:31 binita start_systemd.sh[268]: /etc/udhcpc.d/50default: Addin...1
 Oct 30 09:20:31 binita start_systemd.sh[268]: root: The interface [enp0s17u1...!
 Oct 30 09:20:31 binita root[375]: The interface [enp0s17u1] is up!
-Oct 30 09:20:31 binita start_systemd.sh[268]: root: CANDY-IoT Board is initi...!
-Oct 30 09:20:31 binita root[376]: CANDY-IoT Board is initialized successfully!
-Oct 30 09:20:31 binita systemd[1]: Started CANDY-IoT Board Service.
+Oct 30 09:20:31 binita start_systemd.sh[268]: root: CANDY IoT Board is initi...!
+Oct 30 09:20:31 binita root[376]: CANDY IoT Board is initialized successfully!
+Oct 30 09:20:31 binita systemd[1]: Started CANDY IoT Board Service.
 Hint: Some lines were ellipsized, use -l to show in full.
 ```
 
@@ -233,7 +233,7 @@ root@edison:~# ciot modem show
   - ドキュメントの表現を変更
 
 * 1.2.0
-  - WiFi APモード動作時のLED点滅をCANDY-IoTボードのLED(GPIO 14)でも点滅するように変更
+  - WiFi APモード動作時のLED点滅をCANDY IoTボードのLED(GPIO 14)でも点滅するように変更
 
 * 1.1.0
   - Dockerコンテナー内で動作させるため、`KERNEL`の指定を行える機能を追加（例：`KERNEL=3.10.17-poky-edison+`）
