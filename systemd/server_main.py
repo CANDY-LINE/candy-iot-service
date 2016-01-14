@@ -12,6 +12,7 @@ import threading
 import time
 import subprocess
 import atexit
+import re
 
 # sys.argv[0] ... Serial Port
 # sys.argv[1] ... The path to socket file, e.g. /var/run/candy-iot.sock
@@ -133,8 +134,9 @@ class SerialPort:
     os.write(self.fd, chr(byte))
 
 class SockServer(threading.Thread):
-  def __init__(self, sock_path, serial=None):
+  def __init__(self, version, sock_path, serial=None):
     super(SockServer, self).__init__()
+    self.version = version
     self.sock_path = sock_path
     self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     self.serial = serial
@@ -198,6 +200,9 @@ class SockServer(threading.Thread):
     elif cmd['category'] == "modem":
       if cmd['action'] == "show":
         return self.modem_show()
+    elif cmd['category'] == "info":
+      if cmd['action'] == "version":
+        return self.info_version()
     
     return "Unknown Command"
 
@@ -345,6 +350,14 @@ class SockServer(threading.Thread):
     }
     return json.dumps(message)
     
+  def info_version(self):
+    message = {
+      'status': 'OK',
+      'result': {
+        'version': self.version,
+      }
+    }
+    return json.dumps(message)
 
 def delete_sock_path(sock_path):
   try:
@@ -353,6 +366,15 @@ def delete_sock_path(sock_path):
     if os.path.exists(sock_path):
       raise
 
+def resolve_version():
+  dir = os.path.dirname(os.path.abspath(__file__))
+  with open(dir + '/candy-iot.service', 'r') as f:
+    content = f.read()
+  m = re.search(r'CANDY IoT Board Service, version:(.*)', content, re.MULTILINE)
+  if m is not None:
+    return m.group(1)
+  return 'N/A'
+  
 def main(serial_port, sock_path, nic):
   delete_sock_path(sock_path)
   atexit.register(delete_sock_path, sock_path)
@@ -367,7 +389,7 @@ def main(serial_port, sock_path, nic):
   else:
     serial = SerialPort(serial_port, 115200)
 
-  server = SockServer(sock_path, serial)
+  server = SockServer(resolve_version(), sock_path, serial)
   if 'DEBUG' in os.environ and os.environ['DEBUG'] == "1":
     server.debug = True
   server.start()

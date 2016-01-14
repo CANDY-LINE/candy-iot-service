@@ -46,10 +46,10 @@ function inactivate_lte {
 }
 
 # start banner
-logger -s "Inactivating CANDY-IoT Board..."
+logger -s "Inactivating CANDY IoT Board..."
 
 diagnose_self
 inactivate_lte
 
 # end banner
-logger -s "CANDY-IoT Board is inactivated successfully!"
+logger -s "CANDY IoT Board is inactivated successfully!"

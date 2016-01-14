@@ -47,12 +47,12 @@ function activate_lte {
 }
 
 # start banner
-logger -s "Initializing CANDY-IoT Board..."
+logger -s "Initializing CANDY IoT Board..."
 
 diagnose_self
 activate_lte
 
 # end banner
-logger -s "CANDY-IoT Board is initialized successfully!"
+logger -s "CANDY IoT Board is initialized successfully!"
 
 /usr/bin/env python /opt/robotma/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock ${IF_NAME}

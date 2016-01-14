@@ -13,6 +13,7 @@ import sys
 # ciot network show ... show phone network state and signal strength (RSSI in dBm)
 # ciot sim show ... show SIM status and info (MSISDN, IMSI)
 # ciot modem show ... show modem info (Model, Manufacturer, Revision, IMEI)
+# ciot info version ... return this service software version
 
 if 'SOCK_PATH' in os.environ:
   SOCK_PATH = os.environ['SOCK_PATH']
@@ -21,14 +22,14 @@ else:
 
 def main(args):
   if not os.path.exists(SOCK_PATH):
-    print("Error! CANDY-IoT Service isn't running")
+    print("Error! CANDY IoT Service isn't running")
     return 1
 
   sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
   sock.connect(SOCK_PATH)
   code = 0
 
-  if args.category in ("apn", "network", "sim", "modem"):
+  if args.category in ("apn", "network", "sim", "modem", "info"):
     try:
       # request
       packer = struct.Struct("I")
@@ -63,7 +64,7 @@ def main(args):
     raise ValueError('Unsupported category')
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description="CANDY-IoT CLI")
+  parser = argparse.ArgumentParser(description="CANDY IoT CLI")
   categories = parser.add_subparsers(title="categories", dest="category")
 
   parser_apn = categories.add_parser("apn", help = "Manipulate APN settings")
@@ -86,6 +87,10 @@ if __name__ == '__main__':
   parser_modem = categories.add_parser("modem", help = "Manage LTE/3G module modem")
   modem_commands = parser_modem.add_subparsers(title="Modem actions", dest="action")
   parser_modem_show = modem_commands.add_parser ("show", help = "Show Module information")
+
+  parser_info = categories.add_parser("info", help = "Show CANDY IoT Service software information")
+  info_commands = parser_info.add_subparsers(title="CANDY IoT Service software information actions", dest="action")
+  parser_info_version = info_commands.add_parser ("version", help = "Show this service software version")
 
   args = parser.parse_args()
   sys.exit(main(args))
