@@ -3,10 +3,10 @@ CANDY IoT Board Service
 
 本サービスは、Intel Edison Yocto上で動作するCANDY IoTボードを動作させるためのサービスです。
 
-![CANDY IoT Image(1)](images/CANDY IoT-1.jpg "CANDY IoT Image 1")
+![CANDY IoT Image(1)](images/CANDY-IoT-1.jpg "CANDY IoT Image 1")
 
 
-![CANDY IoT Image(2)](images/CANDY IoT-2.jpg "CANDY IoT Image 2")
+![CANDY IoT Image(2)](images/CANDY-IoT-2.jpg "CANDY IoT Image 2")
 
 このサービスでは、以下の機能を提供しています。
 
