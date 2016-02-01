@@ -153,7 +153,18 @@ function teardown {
   fi
 }
 
+function package {
+  rm -f $(basename ${GITHUB_ID})-${VERSION}.tgz
+  # http://unix.stackexchange.com/a/9865
+  COPYFILE_DISABLE=1 tar --exclude="./.*" -zcf $(basename ${GITHUB_ID})-${VERSION}.tgz *
+}
+
 # main
+if [ "$1" == "pack" ]; then
+  package
+  exit 0
+fi
+
 setup
 install_cdc_ether
 install_service
