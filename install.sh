@@ -6,7 +6,7 @@ ROBOTMA_HOME=/opt/robotma
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=Robotma-com/candy-iot-service
-VERSION=1.5.0-devel
+VERSION=1.5.0
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
