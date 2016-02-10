@@ -6,7 +6,7 @@ ROBOTMA_HOME=/opt/robotma
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=Robotma-com/candy-iot-service
-VERSION=1.4.0
+VERSION=1.5.0
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
@@ -73,7 +73,7 @@ function install_cdc_ether {
     return
   fi
   download
-  
+
   MOD_DIR=/lib/modules/${KERNEL}/kernel/drivers/net/usb/
   mkdir -p ${MOD_DIR}
   cpf ${SRC_DIR}/lib/cdc_ether.ko ${MOD_DIR}
@@ -90,7 +90,7 @@ function install_cdc_ether {
       exit 1
     fi
   fi
-  
+
   echo "cdc_ether" > /etc/modules-load.d/cdc_ether.conf
   info "cdc_ether has been installed"
   REBOOT=1
@@ -103,15 +103,17 @@ function install_service {
     return
   fi
   download
-  
+
   LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))"
   if [ "${LIB_SYSTEMD}" == "/" ]; then
     LIB_SYSTEMD=""
   fi
   LIB_SYSTEMD="${LIB_SYSTEMD}/lib/systemd"
-  
+
   mkdir -p ${SERVICE_HOME}
-  cpf ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
+  cpf ${SRC_DIR}/systemd/boot-apn.json ${SERVICE_HOME}
+  cpf ${SRC_DIR}/systemd/environment.txt ${SERVICE_HOME}/environment
+  sed -i -e "s/%VERSION%/${VERSION//\//\\/}/g" ${SERVICE_HOME}/environment
   FILES=`ls ${SRC_DIR}/systemd/*.sh`
   FILES="${FILES} `ls ${SRC_DIR}/systemd/server_*.py`"
   for f in ${FILES}
@@ -153,7 +155,18 @@ function teardown {
   fi
 }
 
+function package {
+  rm -f $(basename ${GITHUB_ID})-${VERSION}.tgz
+  # http://unix.stackexchange.com/a/9865
+  COPYFILE_DISABLE=1 tar --exclude="./.*" -zcf $(basename ${GITHUB_ID})-${VERSION}.tgz *
+}
+
 # main
+if [ "$1" == "pack" ]; then
+  package
+  exit 0
+fi
+
 setup
 install_cdc_ether
 install_service

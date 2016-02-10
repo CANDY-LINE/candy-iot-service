@@ -44,8 +44,8 @@ function uninstall_service {
   RET=$?
   if [ "${RET}" == "0" ]; then
     systemctl stop ${SERVICE_NAME}
-    systemctl disable ${SERVICE_NAME}
   fi
+  systemctl disable ${SERVICE_NAME}
 
   rm -f /usr/bin/ciot
   

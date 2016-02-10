@@ -16,81 +16,81 @@ import sys
 # ciot info version ... return this service software version
 
 if 'SOCK_PATH' in os.environ:
-  SOCK_PATH = os.environ['SOCK_PATH']
+    SOCK_PATH = os.environ['SOCK_PATH']
 else:
-  SOCK_PATH = "/var/run/candy-iot.sock"
+    SOCK_PATH = "/var/run/candy-iot.sock"
 
 def main(args):
-  if not os.path.exists(SOCK_PATH):
-    print("Error! CANDY IoT Service isn't running")
-    return 1
+    if not os.path.exists(SOCK_PATH):
+        print("Error! CANDY IoT Service isn't running")
+        return 1
 
-  sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-  sock.connect(SOCK_PATH)
-  code = 0
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.connect(SOCK_PATH)
+    code = 0
 
-  if args.category in ("apn", "network", "sim", "modem", "info"):
-    try:
-      # request
-      packer = struct.Struct("I")
-      cmd_json = json.dumps(vars(args))
-      size = len(cmd_json)
-      packed_header = packer.pack(size)
-      sock.sendall(packed_header)
-      packer = struct.Struct("%is" % size)
-      packed_json = packer.pack(cmd_json)
-      sock.sendall(packed_json)
-      
-      # response
-      packer = struct.Struct("I")
-      packed_result = sock.recv(packer.size)
-      result = packer.unpack(packed_result)
+    if args.category in ("apn", "network", "sim", "modem", "info"):
+        try:
+            # request
+            packer = struct.Struct("I")
+            cmd_json = json.dumps(vars(args))
+            size = len(cmd_json)
+            packed_header = packer.pack(size)
+            sock.sendall(packed_header)
+            packer = struct.Struct("%is" % size)
+            packed_json = packer.pack(cmd_json)
+            sock.sendall(packed_json)
 
-      # result
-      if result != 0:
-        packer = struct.Struct("%is" % result)
-        packed_message = sock.recv(packer.size)
-        message_json = packer.unpack(packed_message)
-        message = json.loads(message_json[0])
-        if message['status'] != 'OK':
-          code = 2
-        if message['result']:
-          print(json.dumps(message['result'], indent=2))
+            # response
+            packer = struct.Struct("I")
+            packed_result = sock.recv(packer.size)
+            result = packer.unpack(packed_result)
 
-    finally:
-      sock.close()
-      return code
-  else:
-    raise ValueError('Unsupported category')
+            # result
+            if result != 0:
+                packer = struct.Struct("%is" % result)
+                packed_message = sock.recv(packer.size)
+                message_json = packer.unpack(packed_message)
+                message = json.loads(message_json[0])
+                if message['status'] != 'OK':
+                    code = 2
+                if message['result']:
+                    print(json.dumps(message['result'], indent=2))
+
+        finally:
+            sock.close()
+            return code
+    else:
+        raise ValueError('Unsupported category')
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description="CANDY IoT CLI")
-  categories = parser.add_subparsers(title="categories", dest="category")
+    parser = argparse.ArgumentParser(description="CANDY IoT CLI")
+    categories = parser.add_subparsers(title="categories", dest="category")
 
-  parser_apn = categories.add_parser("apn", help = "Manipulate APN settings")
-  apn_commands = parser_apn.add_subparsers(title="APN actions", dest="action")
+    parser_apn = categories.add_parser("apn", help = "Manipulate APN settings")
+    apn_commands = parser_apn.add_subparsers(title="APN actions", dest="action")
 
-  parser_apn_ls = apn_commands.add_parser ("ls", help = "List all APNs")
-  parser_apn_set = apn_commands.add_parser ("set", help = "Set a new APN")
-  parser_apn_set.add_argument ("-n", "--name", type = str, required = True, help = "APN")
-  parser_apn_set.add_argument ("-u", "--user-id", type = str, required = True, help = "User ID")
-  parser_apn_set.add_argument ("-p", "--password", type = str, required = True, help = "User Password")
+    parser_apn_ls = apn_commands.add_parser ("ls", help = "List all APNs")
+    parser_apn_set = apn_commands.add_parser ("set", help = "Set a new APN")
+    parser_apn_set.add_argument ("-n", "--name", type = str, required = True, help = "APN")
+    parser_apn_set.add_argument ("-u", "--user-id", type = str, required = True, help = "User ID")
+    parser_apn_set.add_argument ("-p", "--password", type = str, required = True, help = "User Password")
 
-  parser_network = categories.add_parser("network", help = "Manage Phone Network")
-  network_commands = parser_network.add_subparsers(title="Phone Network actions", dest="action")
-  parser_network_show = network_commands.add_parser ("show", help = "Show Phone network state and Signal strength")
+    parser_network = categories.add_parser("network", help = "Manage Phone Network")
+    network_commands = parser_network.add_subparsers(title="Phone Network actions", dest="action")
+    parser_network_show = network_commands.add_parser ("show", help = "Show Phone network state and Signal strength")
 
-  parser_sim = categories.add_parser("sim", help = "Manage SIM")
-  sim_commands = parser_sim.add_subparsers(title="SIM actions", dest="action")
-  parser_sim_show = sim_commands.add_parser ("show", help = "Show SIM state and SIM information")
+    parser_sim = categories.add_parser("sim", help = "Manage SIM")
+    sim_commands = parser_sim.add_subparsers(title="SIM actions", dest="action")
+    parser_sim_show = sim_commands.add_parser ("show", help = "Show SIM state and SIM information")
 
-  parser_modem = categories.add_parser("modem", help = "Manage LTE/3G module modem")
-  modem_commands = parser_modem.add_subparsers(title="Modem actions", dest="action")
-  parser_modem_show = modem_commands.add_parser ("show", help = "Show Module information")
+    parser_modem = categories.add_parser("modem", help = "Manage LTE/3G module modem")
+    modem_commands = parser_modem.add_subparsers(title="Modem actions", dest="action")
+    parser_modem_show = modem_commands.add_parser ("show", help = "Show Module information")
 
-  parser_info = categories.add_parser("info", help = "Show CANDY IoT Service software information")
-  info_commands = parser_info.add_subparsers(title="CANDY IoT Service software information actions", dest="action")
-  parser_info_version = info_commands.add_parser ("version", help = "Show this service software version")
+    parser_info = categories.add_parser("info", help = "Show CANDY IoT Service software information")
+    info_commands = parser_info.add_subparsers(title="CANDY IoT Service software information actions", dest="action")
+    parser_info_version = info_commands.add_parser ("version", help = "Show this service software version")
 
-  args = parser.parse_args()
-  sys.exit(main(args))
+    args = parser.parse_args()
+    sys.exit(main(args))
