@@ -134,13 +134,15 @@ class SerialPort:
         os.write(self.fd, chr(byte))
 
 class SockServer(threading.Thread):
-    def __init__(self, version, sock_path, serial=None):
+    def __init__(self, version, sock_path, apn, serial=None):
         super(SockServer, self).__init__()
         self.version = version
         self.sock_path = sock_path
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.serial = serial
         self.debug = False
+        if apn:
+            self.apn_set(apn['apn'], apn['user'], apn['password'])
 
     def recv(self, connection, size):
         ready, _, _ = select.select([connection], [], [], 5)
@@ -371,6 +373,16 @@ def resolve_version():
         return os.environ['VERSION']
     return 'N/A'
 
+def resolve_boot_apn():
+    dir = os.path.dirname(os.path.abspath(__file__))
+    apn_json = dir + '/boot-apn.json'
+    if not os.path.isfile(apn_json):
+        return None
+    with open(apn_json) as apn_creds:
+        apn = json.load(apn_creds)
+    os.remove(apn_json)
+    return apn
+
 def main(serial_port, sock_path, nic):
     delete_sock_path(sock_path)
     atexit.register(delete_sock_path, sock_path)
@@ -385,7 +397,7 @@ def main(serial_port, sock_path, nic):
     else:
         serial = SerialPort(serial_port, 115200)
 
-    server = SockServer(resolve_version(), sock_path, serial)
+    server = SockServer(resolve_version(), sock_path, resolve_boot_apn(), serial)
     if 'DEBUG' in os.environ and os.environ['DEBUG'] == "1":
         server.debug = True
     server.start()
