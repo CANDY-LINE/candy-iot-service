@@ -11,11 +11,11 @@ function try_to_change_usb_data_conn {
     return
   fi
   # Reset to default
-  # echo -e "AT@USBCHG=ACM\r\r" | microcom -t 1000 -s 115200 /dev/ttyUSB1 && echo "rebooting" && reboot
+  # echo -e "AT@USBCHG=ACM\r\r" | microcom -t 1000 -s 115200 /dev/ttyUSB1 && echo "*** Rebooting... ***" && reboot
   # Change to ECM
   logger -s "Modifying the USB data connection I/F to ECM"
   echo -e "AT@USBCHG=ECM\r\rAT@AUTOCONN=1\r\r" | microcom -t 1000 -s 115200 /dev/ttyACM0
-  logger -s "Rebooting..."
+  logger -s "*** Rebooting... ***"
   reboot
 }
 
