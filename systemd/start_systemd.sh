@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2015 Robotma.com
+# Copyright (c) 2016 Robotma.com
 
 MODULE_SUPPORTED=0
 
