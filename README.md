@@ -252,6 +252,15 @@ root@edison:~# ciot modem show
 1. [`install.sh`](/install.sh)内の`VERSION=`にあるバージョンを修正してコミットする
 1. 履歴を追記、修正してコミットする
 
+## Installation Test
+
+```bash
+$ VERSION=<candy-iot-service-version>
+$ rm -fr /tmp/candy-iot-service && mkdir -p /tmp/candy-iot-service && \
+  tar zxf candy-iot-service-${VERSION}.tgz -C /tmp/candy-iot-service
+$ SRC_DIR=/tmp/candy-iot-service DEBUG=1 /tmp/candy-iot-service/install.sh
+```
+
 ## 履歴
 * 1.5.0
   - AM Telecom社製LTE/3Gモジュールの自動初期設定(モデム設定とAPN設定)を追加
