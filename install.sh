@@ -73,7 +73,7 @@ function install_cdc_ether {
     return
   fi
   download
-  
+
   MOD_DIR=/lib/modules/${KERNEL}/kernel/drivers/net/usb/
   mkdir -p ${MOD_DIR}
   cpf ${SRC_DIR}/lib/cdc_ether.ko ${MOD_DIR}
@@ -90,7 +90,7 @@ function install_cdc_ether {
       exit 1
     fi
   fi
-  
+
   echo "cdc_ether" > /etc/modules-load.d/cdc_ether.conf
   info "cdc_ether has been installed"
   REBOOT=1
@@ -103,13 +103,13 @@ function install_service {
     return
   fi
   download
-  
+
   LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))"
   if [ "${LIB_SYSTEMD}" == "/" ]; then
     LIB_SYSTEMD=""
   fi
   LIB_SYSTEMD="${LIB_SYSTEMD}/lib/systemd"
-  
+
   mkdir -p ${SERVICE_HOME}
   cpf ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
   FILES=`ls ${SRC_DIR}/systemd/*.sh`
