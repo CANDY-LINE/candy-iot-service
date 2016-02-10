@@ -367,12 +367,8 @@ def delete_sock_path(sock_path):
             raise
 
 def resolve_version():
-    dir = os.path.dirname(os.path.abspath(__file__))
-    with open(dir + '/candy-iot.service', 'r') as f:
-        content = f.read()
-    m = re.search(r'CANDY IoT Board Service, version:(.*)', content, re.MULTILINE)
-    if m is not None:
-        return m.group(1)
+    if 'VERSION' in os.environ:
+        return os.environ['VERSION']
     return 'N/A'
 
 def main(serial_port, sock_path, nic):

@@ -111,7 +111,8 @@ function install_service {
   LIB_SYSTEMD="${LIB_SYSTEMD}/lib/systemd"
 
   mkdir -p ${SERVICE_HOME}
-  cpf ${SRC_DIR}/systemd/environment ${SERVICE_HOME}
+  cpf ${SRC_DIR}/systemd/environment.txt ${SERVICE_HOME}/environment
+  sed -i -e "s/%VERSION%/${VERSION//\//\\/}/g" ${SERVICE_HOME}/environment
   FILES=`ls ${SRC_DIR}/systemd/*.sh`
   FILES="${FILES} `ls ${SRC_DIR}/systemd/server_*.py`"
   for f in ${FILES}
