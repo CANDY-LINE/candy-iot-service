@@ -1,6 +1,9 @@
 CANDY IoT Board Service
 ===
 
+[![GitHub release](https://img.shields.io/github/release/Robotma-com/candy-iot-service.svg)](https://github.com/Robotma-com/candy-iot-service/releases/latest)
+[![License BSD3](https://img.shields.io/github/license/Robotma-com/candy-iot-service.svg)](http://opensource.org/licenses/BSD-3-Clause)
+
 本サービスは、Intel Edison Yocto上で動作するCANDY IoTボードを動作させるためのサービスです。
 
 ![CANDY IoT Image(1)](images/CANDY-IoT-1.jpg "CANDY IoT Image 1")
