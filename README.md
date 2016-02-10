@@ -35,7 +35,7 @@ CANDY IoT Board Service
 Poky (Yocto Project Reference Distro) 1.7.2 binita ttyMFD2
 
 binita login: root
-Password: 
+Password:
 root@binita:~# ifconfig wlan0 up
 ```
 
@@ -54,7 +54,7 @@ Content-Length: 6471
 Content-Type: text/html
 
 curl: (18) transfer closed with 6471 bytes remaining to read
-root@binita:~# 
+root@binita:~#
 ```
 
 GitHub上にあるスクリプトをダウンロードしてインストールします。
@@ -109,7 +109,7 @@ enp0s17u1 Link encap:Ethernet  HWaddr 99:99:99:99:99:99
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
           RX packets:6 errors:0 dropped:0 overruns:0 frame:0
           TX packets:30 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
+          collisions:0 txqueuelen:1000
           RX bytes:768 (768.0 B)  TX bytes:4234 (4.1 KiB)
 ```
 
@@ -198,8 +198,8 @@ rssiの単位は`dBm`となります。結果文字列の`rssiDesc`には以下�
 ```bash
 root@edison:~# ciot network show
 {
-  "rssi": "-85", 
-  "network": "ONLINE", 
+  "rssi": "-85",
+  "network": "ONLINE",
   "rssiDesc": ""
 }
 ```
@@ -214,8 +214,8 @@ SIMの状態を表示します。
 ```bash
 root@edison:~# ciot sim show
 {
-  "msisdn": "11111111111", 
-  "state": "SIM_STATE_READY", 
+  "msisdn": "11111111111",
+  "state": "SIM_STATE_READY",
   "imsi": "440111111111111"
 }
 ```
@@ -226,9 +226,9 @@ root@edison:~# ciot sim show
 ```bash
 root@edison:~# ciot modem show
 {
-  "imei": "999999999999999", 
-  "model": "AMP5200", 
-  "manufacturer": "AM Telecom", 
+  "imei": "999999999999999",
+  "model": "AMP5200",
+  "manufacturer": "AM Telecom",
   "revision": "14-01"
 }
 ```
