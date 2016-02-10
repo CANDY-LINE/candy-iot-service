@@ -1,6 +1,9 @@
 CANDY IoT Board Service
 ===
 
+[![GitHub release](https://img.shields.io/github/release/Robotma-com/candy-iot-service.svg)](https://github.com/Robotma-com/candy-iot-service/releases/latest)
+[![License BSD3](https://img.shields.io/github/license/Robotma-com/candy-iot-service.svg)](http://opensource.org/licenses/BSD-3-Clause)
+
 本サービスは、Intel Edison Yocto上で動作するCANDY IoTボードを動作させるためのサービスです。
 
 ![CANDY IoT Image(1)](images/CANDY-IoT-1.jpg "CANDY IoT Image 1")
@@ -10,6 +13,7 @@ CANDY IoT Board Service
 
 このサービスでは、以下の機能を提供しています。
 
+- AM Telecom社製LTE/3Gモジュールの自動初期設定(モデム設定とAPN設定)
 - AM Telecom社製LTE/3Gモジュールの自動起動
 - AM Telecom社製LTE/3Gモジュールを操作するコマンドラインツール
   - APN設定、表示
@@ -25,13 +29,23 @@ CANDY IoT Board Service
 ## インストール方法
 **インストールには、インターネットに接続できるWi-Fiのアクセスポイントが必要です。**
 
-まず最初にEdisonにログインします。続いて、WiFiを起動させてください。もしWiFiを設定していないときは、`configure-edison --wifi`にて、Wi−Fiの設定を行ってください。
+最初にEdisonをCANDY IoTボードに装着し、SIMカードを装着します。
+続いて、CANDY IoTボードにある２つのUSBケーブルをお手持ちのコンピューターに装着します。
+つづいてそのコンピューターからEdisonにログインします。
+初期状態では、USBシリアルで接続されていますので、シリアルポートを探してターミナルで接続してください。
+
+以下は、OSXやLinuxでの接続例です。ポート名は端末や環境により異なります（例：`/dev/tty.usbserial-DJ00SDKB`、`/dev/ttyUSB1`）。
+```bash
+$ screen ポート名 115200
+```
+
+続いて、WiFiを起動させてください。もしWiFiを設定していないときは、`configure-edison --wifi`にて、Wi−Fiの設定を行ってください。
 
 ```bash
 Poky (Yocto Project Reference Distro) 1.7.2 binita ttyMFD2
 
 binita login: root
-Password: 
+Password:
 root@binita:~# ifconfig wlan0 up
 ```
 
@@ -50,7 +64,7 @@ Content-Length: 6471
 Content-Type: text/html
 
 curl: (18) transfer closed with 6471 bytes remaining to read
-root@binita:~# 
+root@binita:~#
 ```
 
 GitHub上にあるスクリプトをダウンロードしてインストールします。
@@ -75,24 +89,25 @@ root@binita:~# reboot
 
 ```bash
 root@binita:~# systemctl status candy-iot
-● candy-iot.service - CANDY IoT Board Service
+● candy-iot.service - CANDY IoT Board Service, version:1.5.0
    Loaded: loaded (/lib/systemd/system/candy-iot.service; enabled)
-   Active: active (exited) since Fri 2015-10-30 09:20:31 UTC; 32s ago
-  Process: 268 ExecStart=/opt/robotma/candy-iot/start_systemd.sh (code=exited, status=0/SUCCESS)
- Main PID: 268 (code=exited, status=0/SUCCESS)
+   Active: active (running) since Wed 2016-02-10 03:33:17 UTC; 1min 1s ago
+ Main PID: 304 (bash)
    CGroup: /system.slice/candy-iot.service
-           └─374 udhcpc -i enp0s17u1
+           ├─304 bash /opt/robotma/candy-iot/start_systemd.sh
+           ├─325 python /opt/robotma/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock enp0s17u1
+           └─429 udhcpc -i enp0s17u1
 
-Oct 30 09:20:28 binita start_systemd.sh[268]: udhcpc (v1.22.1) started
-Oct 30 09:20:28 binita start_systemd.sh[268]: Sending discover...
-Oct 30 09:20:31 binita start_systemd.sh[268]: Sending select for 192.168.225....
-Oct 30 09:20:31 binita start_systemd.sh[268]: Lease of 192.168.225.37 obtain...0
-Oct 30 09:20:31 binita start_systemd.sh[268]: /etc/udhcpc.d/50default: Addin...1
-Oct 30 09:20:31 binita start_systemd.sh[268]: root: The interface [enp0s17u1...!
-Oct 30 09:20:31 binita root[375]: The interface [enp0s17u1] is up!
-Oct 30 09:20:31 binita start_systemd.sh[268]: root: CANDY IoT Board is initi...!
-Oct 30 09:20:31 binita root[376]: CANDY IoT Board is initialized successfully!
-Oct 30 09:20:31 binita systemd[1]: Started CANDY IoT Board Service.
+Feb 10 03:33:41 candyred start_systemd.sh[304]: Sending select for 192.168.225.40...
+Feb 10 03:33:41 candyred start_systemd.sh[304]: Lease of 192.168.225.40 obtained, lease time 43200
+Feb 10 03:33:41 candyred start_systemd.sh[304]: /etc/udhcpc.d/50default: Adding DNS 192.168.225.1
+Feb 10 03:33:46 candyred start_systemd.sh[304]: default         192.168.225.1   0.0.0.0         UG    0      0    ...s17u1
+Feb 10 03:33:51 candyred start_systemd.sh[304]: default         192.168.225.1   0.0.0.0         UG    0      0    ...s17u1
+Feb 10 03:33:56 candyred start_systemd.sh[304]: default         192.168.225.1   0.0.0.0         UG    0      0    ...s17u1
+Feb 10 03:34:01 candyred start_systemd.sh[304]: default         192.168.225.1   0.0.0.0         UG    0      0    ...s17u1
+Feb 10 03:34:06 candyred start_systemd.sh[304]: default         192.168.225.1   0.0.0.0         UG    0      0    ...s17u1
+Feb 10 03:34:11 candyred start_systemd.sh[304]: default         192.168.225.1   0.0.0.0         UG    0      0    ...s17u1
+Feb 10 03:34:16 candyred start_systemd.sh[304]: default         192.168.225.1   0.0.0.0         UG    0      0    ...s17u1
 Hint: Some lines were ellipsized, use -l to show in full.
 ```
 
@@ -105,7 +120,7 @@ enp0s17u1 Link encap:Ethernet  HWaddr 99:99:99:99:99:99
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
           RX packets:6 errors:0 dropped:0 overruns:0 frame:0
           TX packets:30 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
+          collisions:0 txqueuelen:1000
           RX bytes:768 (768.0 B)  TX bytes:4234 (4.1 KiB)
 ```
 
@@ -130,7 +145,7 @@ root@binita:~# reboot
 再起動後、サービスが削除されたことを確認します。
 
 ```bash
-root@binita:~# systemctl status candy-iot 
+root@binita:~# systemctl status candy-iot
 ● candy-iot.service
    Loaded: not-found (Reason: No such file or directory)
    Active: inactive (dead)
@@ -142,6 +157,17 @@ root@binita:~# systemctl status candy-iot
 root@binita:~# ifconfig enp0s17u1
 enp0s17u1: error fetching interface information: Device not found
 ```
+
+## 自動初期設定
+
+### モデム設定
+新規ご購入時など、LTE/3GモジュールがCANDY IoTボード向けの設定になっていない場合があります。
+この場合、本サービスが自動的に設定を変更します。この変更が行われるとOSが再起動されます。
+通常、初回起動時にこの変更は行われます。
+
+### APN設定
+初回インストール時には、USEN向けAPN設定が行われます。
+この設定は、後述のコマンドラインツールにより変更することができます。
 
 ## コマンドラインツール使用方法
 LTE/3Gモジュールの情報を取得したり、設定したりするため、`ciot`というコマンドを利用します。
@@ -155,8 +181,8 @@ root@edison:~# ciot apn ls
 {
   "apns": [
     {
-      "apn": "iijmio.jp", 
-      "user": "iij"
+      "apn": "umobile.jp",
+      "user": "umobile"
     }
   ]
 }
@@ -164,6 +190,9 @@ root@edison:~# ciot apn ls
 
 ### APNの設定
 APNを設定します。単一のAPNのみ設定することができます。
+
+すでにインターネットに接続できている状態でAPNを変更した場合、変更を反映させるためにはモジュールを再起動する必要があります。
+そのような場合は、CANDY IoTボードから電源を外し、再度接続するようにしてください。
 
 ```bash
 root@edison:~# ciot apn set -n APN名 -u ユーザーID -p パスワード
@@ -183,8 +212,8 @@ rssiの単位は`dBm`となります。結果文字列の`rssiDesc`には以下�
 ```bash
 root@edison:~# ciot network show
 {
-  "rssi": "-85", 
-  "network": "ONLINE", 
+  "rssi": "-85",
+  "network": "ONLINE",
   "rssiDesc": ""
 }
 ```
@@ -199,8 +228,8 @@ SIMの状態を表示します。
 ```bash
 root@edison:~# ciot sim show
 {
-  "msisdn": "11111111111", 
-  "state": "SIM_STATE_READY", 
+  "msisdn": "11111111111",
+  "state": "SIM_STATE_READY",
   "imsi": "440111111111111"
 }
 ```
@@ -211,9 +240,9 @@ root@edison:~# ciot sim show
 ```bash
 root@edison:~# ciot modem show
 {
-  "imei": "999999999999999", 
-  "model": "AMP5200", 
-  "manufacturer": "AM Telecom", 
+  "imei": "999999999999999",
+  "model": "AMP5200",
+  "manufacturer": "AM Telecom",
   "revision": "14-01"
 }
 ```
@@ -223,7 +252,19 @@ root@edison:~# ciot modem show
 1. [`install.sh`](/install.sh)内の`VERSION=`にあるバージョンを修正してコミットする
 1. 履歴を追記、修正してコミットする
 
+## Installation Test
+
+```bash
+$ VERSION=<candy-iot-service-version>
+$ rm -fr /tmp/candy-iot-service && mkdir -p /tmp/candy-iot-service && \
+  tar zxf candy-iot-service-${VERSION}.tgz -C /tmp/candy-iot-service
+$ SRC_DIR=/tmp/candy-iot-service DEBUG=1 /tmp/candy-iot-service/install.sh
+```
+
 ## 履歴
+* 1.5.0
+  - AM Telecom社製LTE/3Gモジュールの自動初期設定(モデム設定とAPN設定)を追加
+
 * 1.4.0
   - このサービスのソフトウェアバージョンを表示するコマンドを追加
   - 製品名の表記方法を変更
