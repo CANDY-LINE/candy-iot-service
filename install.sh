@@ -10,7 +10,7 @@ VERSION=1.5.0
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
-
+CANDY_RED=${CANDY_RED:-1}
 KERNEL="${KERNEL:-$(uname -r)}"
 CONTAINER_MODE=0
 if [ "${KERNEL}" != "$(uname -r)" ]; then
@@ -96,6 +96,16 @@ function install_cdc_ether {
   REBOOT=1
 }
 
+function install_candyred {
+  if [ "${CANDY_RED}" == "0" ]; then
+    return
+  fi
+  info "Installing CANDY RED..."
+  cd ~
+  npm install -g --unsafe-perm candy-red
+  REBOOT=1
+}
+
 function install_service {
   RET=`systemctl | grep ${SERVICE_NAME}.service`
   RET=$?
@@ -169,6 +179,7 @@ fi
 
 setup
 install_cdc_ether
+install_candyred
 install_service
 apply_patches
 teardown
