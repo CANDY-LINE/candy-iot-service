@@ -194,7 +194,7 @@ http://edison.local:8100
 [CANDY RED](https://github.com/dbaba/candy-red)を後からインストールする場合は、以下のコマンドを実行してください。
 
     $ systemctl stop candy-iot
-    $ npm uninstall -g --unsafe-perm candy-red
+    $ npm install -g --unsafe-perm candy-red
     $ systemctl start candy-iot
 
 もし、LTE通信を利用してインストールしたい場合は、前後の`systemctl`コマンドを実行する必要はありません。
