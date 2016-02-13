@@ -169,12 +169,35 @@ enp0s17u1 Link encap:Ethernet  HWaddr 99:99:99:99:99:99
           RX bytes:768 (768.0 B)  TX bytes:4234 (4.1 KiB)
 ```
 
+## CANDY REDのインストール確認
+CANDY REDは`npmjs.com`経由でインストールされます。時々、このサーバーは`HTTP 400`エラーを返すことがあり、その場合インストールに失敗します。
+このエラーはインストール中には気付きにくいため、以下の方法で正しく[CANDY RED](https://github.com/dbaba/candy-red)がインストールされているかを確認しましょう。
+
+    $ systemctl status candy-red
+
+実行後、以下のようになっている場合は、残念ながらインストールされていません。
+
+    ● candy-red.service
+       Loaded: not-found (Reason: No such file or directory)
+       Active: inactive (dead)
+
+このため、[こちら](#candy-redの追加インストール方法)に記載の方法で追加インストールを行ってください。
+
 ## CANDY REDへのブラウザー接続
 オプション指定をせずインストールを行うと、[CANDY RED](https://github.com/dbaba/candy-red)が有効になっていますので、ブラウザーから接続してみましょう。Edisonがつながっている無線LANと同じネットワークにあるコンピューターのブラウザーで以下のアドレスを入力してページを表示させてみてください。
 ```
 http://edison.local:8100
 ```
 もしEdisonのホスト名を変更していた場合は、「ホスト名.local」を「edison.local」の代わりに指定します。名前で繋がらないときは、IPアドレスを指定しましょう。
+
+## CANDY REDの追加インストール方法
+[CANDY RED](https://github.com/dbaba/candy-red)を後からインストールする場合は、以下のコマンドを実行してください。
+
+    $ systemctl stop candy-iot
+    $ npm uninstall -g --unsafe-perm candy-red
+    $ systemctl start candy-iot
+
+もし、LTE通信を利用してインストールしたい場合は、前後の`systemctl`コマンドを実行する必要はありません。
 
 # アンインストール方法
 アンインストールを行うためには、専用のスクリプトを実行します。このスクリプトは動作中のサービスを停止し、関連ファイルをすべて削除します。
