@@ -355,11 +355,14 @@ $ ./install.sh pack
 
 ## 開発用インストール動作確認
 ```bash
-$ VERSION=1.6.0 && mkdir tmp && cd tmp && tar zxf ~/candy-iot-service-${VERSION}.tgz
+$ VERSION=1.6.1 && mkdir tmp && cd tmp && tar zxf ~/candy-iot-service-${VERSION}.tgz
 $ time SRC_DIR=$(pwd) DEBUG=1 ./install.sh
 ```
 
 # 履歴
+* 1.6.1
+  - コマンド受付ソケットバックログを128に増加
+
 * 1.6.0
   - CANDY REDをデフォルトで追加インストールする機能を追加（`CANDY_RED=0`で抑止可能）
 
