@@ -355,7 +355,7 @@ $ ./install.sh pack
 
 ## 開発用インストール動作確認
 ```bash
-$ VERSION=1.6.0 && mkdir tmp && cd tmp && tar zxf ~/candy-iot-service-${VERSION}.tgz
+$ VERSION=1.6.1 && mkdir tmp && cd tmp && tar zxf ~/candy-iot-service-${VERSION}.tgz
 $ time SRC_DIR=$(pwd) DEBUG=1 ./install.sh
 ```
 
