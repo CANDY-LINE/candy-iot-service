@@ -153,7 +153,7 @@ class SockServer(threading.Thread):
 
     def run(self):
         self.sock.bind(self.sock_path)
-        self.sock.listen(1)
+        self.sock.listen(128)
         header_packer = struct.Struct("I")
         print("Listening to the socket[%s]...." % self.sock_path)
 
