@@ -102,6 +102,7 @@ function install_candyred {
   fi
   info "Installing CANDY RED..."
   cd ~
+  npm cache clean
   npm install -g --unsafe-perm candy-red
   REBOOT=1
 }
