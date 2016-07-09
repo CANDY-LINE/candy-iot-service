@@ -1,8 +1,8 @@
 CANDY IoT Board Service
 ===
 
-[![GitHub release](https://img.shields.io/github/release/Robotma-com/candy-iot-service.svg)](https://github.com/Robotma-com/candy-iot-service/releases/latest)
-[![License BSD3](https://img.shields.io/github/license/Robotma-com/candy-iot-service.svg)](http://opensource.org/licenses/BSD-3-Clause)
+[![GitHub release](https://img.shields.io/github/release/CANDY-LINE/candy-iot-service.svg)](https://github.com/CANDY-LINE/candy-iot-service/releases/latest)
+[![License BSD3](https://img.shields.io/github/license/CANDY-LINE/candy-iot-service.svg)](http://opensource.org/licenses/BSD-3-Clause)
 
 本サービスは、Intel Edison Yocto上で動作するCANDY IoTボードを動作させるためのサービスです。
 
@@ -102,7 +102,7 @@ $ curl -L https://git.io/vgKTM | CANDY_RED=0 bash
 また、特定のバージョンを利用する場合は、以下のようにバージョンを指定することができます。
 ```bash
 $ VERSION=1.5.0 && \
-  curl -L https://raw.githubusercontent.com/Robotma-com/candy-iot-service/${VERSION}/install.sh | \
+  curl -L https://raw.githubusercontent.com/CANDY-LINE/candy-iot-service/${VERSION}/install.sh | \
   sudo bash
 ```
 

@@ -5,7 +5,7 @@
 ROBOTMA_HOME=/opt/robotma
 
 SERVICE_NAME=candy-iot
-GITHUB_ID=Robotma-com/candy-iot-service
+GITHUB_ID=CANDY-LINE/candy-iot-service
 VERSION=1.6.1
 
 SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
