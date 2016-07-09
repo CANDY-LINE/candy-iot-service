@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2015 Robotma.com
+# Copyright (c) 2016 CANDY LINE, Inc.
 
 MODULE_SUPPORTED=0
 
