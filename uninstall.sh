@@ -2,12 +2,12 @@
 
 # Copyright (c) 2015 Robotma.com
 
-ROBOTMA_HOME=/opt/robotma
+CANDY_LINE_HOME=/opt/candy-line
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=Robotma-com/candy-iot-service
 
-SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
+SERVICE_HOME=${CANDY_LINE_HOME}/${SERVICE_NAME}
 
 REBOOT=0
 
@@ -48,7 +48,7 @@ function uninstall_service {
   systemctl disable ${SERVICE_NAME}
 
   rm -f /usr/bin/ciot
-  
+
   LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))/lib/systemd"
   rm -f ${LIB_SYSTEMD}/system/${SERVICE_NAME}.service
   rm -f ${SERVICE_HOME}/environment
@@ -64,7 +64,7 @@ function revert_patches {
     md5sum -c ${SERVICE_HOME}/diff/blink-led-rev.md5sum
     if [ "$?" == "0" ]; then
       cd /usr/bin/
-      patch -R blink-led < ${SERVICE_HOME}/diff/blink-led.patch 
+      patch -R blink-led < ${SERVICE_HOME}/diff/blink-led.patch
       info "Reverted LED Pin No. from 14 to 40"
     fi
     rm -fr ${SERVICE_HOME}/diff
@@ -73,7 +73,7 @@ function revert_patches {
 
 function teardown {
   [ "$(ls -A ${SERVICE_HOME})" ] || rmdir ${SERVICE_HOME}
-  [ "$(ls -A ${ROBOTMA_HOME})" ] || rmdir ${ROBOTMA_HOME}
+  [ "$(ls -A ${CANDY_LINE_HOME})" ] || rmdir ${CANDY_LINE_HOME}
   if [ "${REBOOT}" == "1" ]; then
     alert "*** Please reboot the system! (enter 'reboot') ***"
   fi

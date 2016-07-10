@@ -7,11 +7,11 @@ Before=
 Type=simple
 RemainAfterExit=no
 Restart=on-failure
-ExecStart=/opt/robotma/candy-iot/start_systemd.sh
-ExecStop=/opt/robotma/candy-iot/stop_systemd.sh
-Environment="HOME=/opt/robotma/candy-iot/"
-WorkingDirectory=/opt/robotma/candy-iot/
-EnvironmentFile=/opt/robotma/candy-iot/environment
+ExecStart=/opt/candy-line/candy-iot/start_systemd.sh
+ExecStop=/opt/candy-line/candy-iot/stop_systemd.sh
+Environment="HOME=/opt/candy-line/candy-iot/"
+WorkingDirectory=/opt/candy-line/candy-iot/
+EnvironmentFile=/opt/candy-line/candy-iot/environment
 
 [Install]
 WantedBy=multi-user.target

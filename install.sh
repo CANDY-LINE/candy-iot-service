@@ -2,13 +2,13 @@
 
 # Copyright (c) 2015 Robotma.com
 
-ROBOTMA_HOME=/opt/robotma
+CANDY_LINE_HOME=/opt/candy-line
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=Robotma-com/candy-iot-service
 VERSION=1.6.1
 
-SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
+SERVICE_HOME=${CANDY_LINE_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
 CANDY_RED=${CANDY_RED:-1}
 KERNEL="${KERNEL:-$(uname -r)}"

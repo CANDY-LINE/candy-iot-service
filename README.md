@@ -68,7 +68,7 @@ Wi-Fi起動後、Edisonにてインターネットにアクセスできること
 以下のようなcURLコマンドを実行してみましょう。
 
 ```bash
-$ curl -i -L -X HEAD http://www.robotma.com/
+$ curl -i -L -X HEAD http://www.candy-line.io/
 ```
 
 下記のように`HTTP/1.1 200 OK`と出ていれば問題ありません。
@@ -135,8 +135,8 @@ $ systemctl status candy-iot
        Active: active (running) since Wed 2016-02-10 03:33:17 UTC; 1min 1s ago
      Main PID: 304 (bash)
        CGroup: /system.slice/candy-iot.service
-               ├─304 bash /opt/robotma/candy-iot/start_systemd.sh
-               ├─325 python /opt/robotma/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock enp0s17u1
+               ├─304 bash /opt/candy-line/candy-iot/start_systemd.sh
+               ├─325 python /opt/candy-line/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock enp0s17u1
                └─429 udhcpc -i enp0s17u1
 
     Feb 10 03:33:41 candyred start_systemd.sh[304]: Sending select for 192.168.225.40...
@@ -202,11 +202,11 @@ http://edison.local:8100
 # アンインストール方法
 アンインストールを行うためには、専用のスクリプトを実行します。このスクリプトは動作中のサービスを停止し、関連ファイルをすべて削除します。
 
-まず`/opt/robotma/candy-iot/uninstall.sh`を実行します。
+まず`/opt/candy-line/candy-iot/uninstall.sh`を実行します。
 
 ```bash
 $ cd ~
-$ /opt/robotma/candy-iot/uninstall.sh
+$ /opt/candy-line/candy-iot/uninstall.sh
 ```
 
 このコマンドでは、[CANDY RED](https://github.com/dbaba/candy-red)は削除されません。[CANDY RED](https://github.com/dbaba/candy-red)を削除する場合は、後述の「[CANDY REDのアンインストール](#CANDY REDのアンインストール)」をご覧ください。
