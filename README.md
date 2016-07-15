@@ -266,14 +266,14 @@ $ npm uninstall -g --unsafe-perm candy-red
 この設定は、後述のコマンドラインツールにより変更することができます。
 
 # コマンドラインツール使用方法
-LTE/3Gモジュールの情報を取得したり、設定したりするため、`ciot`というコマンドを利用します。
+LTE/3Gモジュールの情報を取得したり、設定したりするため、`candy`というコマンドを利用します。
 このコマンドは、`/usr/bin`にインストールされるため、インストール完了後（再起動後）にすぐ利用することができます。
 
 ## APNの表示
 現在設定されているAPNを表示します。パスワードは表示されません。
 
 ```bash
-$ ciot apn ls
+$ candy apn ls
 {
   "apns": [
     {
@@ -291,7 +291,7 @@ APNを設定します。単一のAPNのみ設定することができます。
 そのような場合は、CANDY IoTボードから電源を外し、再度接続するようにしてください。
 
 ```bash
-$ ciot apn set -n APN名 -u ユーザーID -p パスワード
+$ candy apn set -n APN名 -u ユーザーID -p パスワード
 ```
 
 ## ネットワーク状態の表示
@@ -306,7 +306,7 @@ rssiの単位は`dBm`となります。結果文字列の`rssiDesc`には以下�
 `network`のプロパティは、`ONLINE`、`OFFLINE`または`UNKNOWN`が入ります。
 
 ```bash
-$ ciot network show
+$ candy network show
 {
   "rssi": "-85",
   "network": "ONLINE",
@@ -322,7 +322,7 @@ SIMの状態を表示します。
 1. `SIM_STATE_ABSENT` ... SIMが認識されていない
 
 ```bash
-$ ciot sim show
+$ candy sim show
 {
   "msisdn": "11111111111",
   "state": "SIM_STATE_READY",
@@ -334,7 +334,7 @@ $ ciot sim show
 モデム状態を表示します。
 
 ```bash
-$ ciot modem show
+$ candy modem show
 {
   "imei": "999999999999999",
   "model": "AMP5200",
@@ -360,6 +360,9 @@ $ time SRC_DIR=$(pwd) DEBUG=1 ./install.sh
 ```
 
 # 履歴
+* 1.7.0
+  - コマンド名を`candy`に変更
+
 * 1.6.1
   - コマンド受付ソケットバックログを128に増加
 

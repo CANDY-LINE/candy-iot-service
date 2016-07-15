@@ -138,7 +138,8 @@ function install_service {
   cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
   cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
-  cpf ${SRC_DIR}/bin/ciot /usr/bin
+  cpf ${SRC_DIR}/bin/candy /usr/bin/ciot # Backward Compatibility
+  cpf ${SRC_DIR}/bin/candy /usr/bin
   info "${SERVICE_NAME} service has been installed"
   REBOOT=1
 }
