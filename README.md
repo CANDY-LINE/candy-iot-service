@@ -68,7 +68,7 @@ Wi-Fi起動後、Edisonにてインターネットにアクセスできること
 以下のようなcURLコマンドを実行してみましょう。
 
 ```bash
-$ curl -i -L -X HEAD http://www.robotma.com/
+$ curl -i -L -X HEAD http://www.candy-line.io/
 ```
 
 下記のように`HTTP/1.1 200 OK`と出ていれば問題ありません。
@@ -135,8 +135,8 @@ $ systemctl status candy-iot
        Active: active (running) since Wed 2016-02-10 03:33:17 UTC; 1min 1s ago
      Main PID: 304 (bash)
        CGroup: /system.slice/candy-iot.service
-               ├─304 bash /opt/robotma/candy-iot/start_systemd.sh
-               ├─325 python /opt/robotma/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock enp0s17u1
+               ├─304 bash /opt/candy-line/candy-iot/start_systemd.sh
+               ├─325 python /opt/candy-line/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock enp0s17u1
                └─429 udhcpc -i enp0s17u1
 
     Feb 10 03:33:41 candyred start_systemd.sh[304]: Sending select for 192.168.225.40...
@@ -202,11 +202,11 @@ http://edison.local:8100
 # アンインストール方法
 アンインストールを行うためには、専用のスクリプトを実行します。このスクリプトは動作中のサービスを停止し、関連ファイルをすべて削除します。
 
-まず`/opt/robotma/candy-iot/uninstall.sh`を実行します。
+まず`/opt/candy-line/candy-iot/uninstall.sh`を実行します。
 
 ```bash
 $ cd ~
-$ /opt/robotma/candy-iot/uninstall.sh
+$ /opt/candy-line/candy-iot/uninstall.sh
 ```
 
 このコマンドでは、[CANDY RED](https://github.com/dbaba/candy-red)は削除されません。[CANDY RED](https://github.com/dbaba/candy-red)を削除する場合は、後述の「[CANDY REDのアンインストール](#CANDY REDのアンインストール)」をご覧ください。
@@ -266,14 +266,14 @@ $ npm uninstall -g --unsafe-perm candy-red
 この設定は、後述のコマンドラインツールにより変更することができます。
 
 # コマンドラインツール使用方法
-LTE/3Gモジュールの情報を取得したり、設定したりするため、`ciot`というコマンドを利用します。
+LTE/3Gモジュールの情報を取得したり、設定したりするため、`candy`というコマンドを利用します。
 このコマンドは、`/usr/bin`にインストールされるため、インストール完了後（再起動後）にすぐ利用することができます。
 
 ## APNの表示
 現在設定されているAPNを表示します。パスワードは表示されません。
 
 ```bash
-$ ciot apn ls
+$ candy apn ls
 {
   "apns": [
     {
@@ -291,7 +291,7 @@ APNを設定します。単一のAPNのみ設定することができます。
 そのような場合は、CANDY IoTボードから電源を外し、再度接続するようにしてください。
 
 ```bash
-$ ciot apn set -n APN名 -u ユーザーID -p パスワード
+$ candy apn set -n APN名 -u ユーザーID -p パスワード
 ```
 
 ## ネットワーク状態の表示
@@ -306,7 +306,7 @@ rssiの単位は`dBm`となります。結果文字列の`rssiDesc`には以下�
 `network`のプロパティは、`ONLINE`、`OFFLINE`または`UNKNOWN`が入ります。
 
 ```bash
-$ ciot network show
+$ candy network show
 {
   "rssi": "-85",
   "network": "ONLINE",
@@ -322,7 +322,7 @@ SIMの状態を表示します。
 1. `SIM_STATE_ABSENT` ... SIMが認識されていない
 
 ```bash
-$ ciot sim show
+$ candy sim show
 {
   "msisdn": "11111111111",
   "state": "SIM_STATE_READY",
@@ -334,7 +334,7 @@ $ ciot sim show
 モデム状態を表示します。
 
 ```bash
-$ ciot modem show
+$ candy modem show
 {
   "imei": "999999999999999",
   "model": "AMP5200",
@@ -360,6 +360,10 @@ $ time SRC_DIR=$(pwd) DEBUG=1 ./install.sh
 ```
 
 # 履歴
+* 1.7.0
+  - コマンド名を`candy`に変更
+  - CANDY REDのデフォルトフローに対応。ただし、現時点では互換性維持のためフローの内容は空としている
+
 * 1.6.1
   - コマンド受付ソケットバックログを128に増加
 

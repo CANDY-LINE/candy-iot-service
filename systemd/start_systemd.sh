@@ -70,4 +70,4 @@ activate_lte
 # end banner
 logger -s "CANDY IoT Board is initialized successfully!"
 
-/usr/bin/env python /opt/robotma/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock ${IF_NAME}
+/usr/bin/env python /opt/candy-line/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock ${IF_NAME}

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2016 CANDY LINE, Inc.
+# Copyright (c) 2015 Robotma.com
 
-ROBOTMA_HOME=/opt/robotma
+CANDY_LINE_HOME=/opt/candy-line
 
 SERVICE_NAME=candy-iot
-GITHUB_ID=CANDY-LINE/candy-iot-service
-VERSION=1.6.1
+GITHUB_ID=Robotma-com/candy-iot-service
+VERSION=1.7.0
 
-SERVICE_HOME=${ROBOTMA_HOME}/${SERVICE_NAME}
+SERVICE_HOME=${CANDY_LINE_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
 CANDY_RED=${CANDY_RED:-1}
 KERNEL="${KERNEL:-$(uname -r)}"
@@ -16,6 +16,7 @@ CONTAINER_MODE=0
 if [ "${KERNEL}" != "$(uname -r)" ]; then
   CONTAINER_MODE=1
 fi
+WELCOME_FLOW_URL=https://git.io/v6en7
 
 REBOOT=0
 
@@ -102,7 +103,9 @@ function install_candyred {
   fi
   info "Installing CANDY RED..."
   cd ~
-  npm install -g --unsafe-perm candy-red
+  npm install -g npm@latest-2
+  npm cache clean
+  WELCOME_FLOW_URL=${WELCOME_FLOW_URL} npm install -g --unsafe-perm candy-red
   REBOOT=1
 }
 
@@ -137,7 +140,8 @@ function install_service {
   cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
   cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
-  cpf ${SRC_DIR}/bin/ciot /usr/bin
+  cpf ${SRC_DIR}/bin/candy /usr/bin/ciot # Backward Compatibility
+  cpf ${SRC_DIR}/bin/candy /usr/bin
   info "${SERVICE_NAME} service has been installed"
   REBOOT=1
 }

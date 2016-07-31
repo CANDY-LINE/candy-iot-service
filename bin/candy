@@ -8,12 +8,12 @@ import struct
 import os
 import sys
 
-# ciot apn ls ... list all apns
-# ciot apn set <name> <user> <password> ... add a given apn
-# ciot network show ... show phone network state and signal strength (RSSI in dBm)
-# ciot sim show ... show SIM status and info (MSISDN, IMSI)
-# ciot modem show ... show modem info (Model, Manufacturer, Revision, IMEI)
-# ciot info version ... return this service software version
+# candy apn ls ... list all apns
+# candy apn set <name> <user> <password> ... add a given apn
+# candy network show ... show phone network state and signal strength (RSSI in dBm)
+# candy sim show ... show SIM status and info (MSISDN, IMSI)
+# candy modem show ... show modem info (Model, Manufacturer, Revision, IMEI)
+# candy info version ... return this service software version
 
 if 'SOCK_PATH' in os.environ:
     SOCK_PATH = os.environ['SOCK_PATH']
