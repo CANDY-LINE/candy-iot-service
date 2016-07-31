@@ -16,6 +16,7 @@ CONTAINER_MODE=0
 if [ "${KERNEL}" != "$(uname -r)" ]; then
   CONTAINER_MODE=1
 fi
+WELCOME_FLOW_URL=https://git.io/v6en7
 
 REBOOT=0
 
@@ -104,7 +105,7 @@ function install_candyred {
   cd ~
   npm install -g npm@latest-2
   npm cache clean
-  npm install -g --unsafe-perm candy-red
+  WELCOME_FLOW_URL=${WELCOME_FLOW_URL} npm install -g --unsafe-perm candy-red
   REBOOT=1
 }
 
