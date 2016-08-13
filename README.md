@@ -68,7 +68,7 @@ Wi-Fi起動後、Edisonにてインターネットにアクセスできること
 以下のようなcURLコマンドを実行してみましょう。
 
 ```bash
-$ curl -i -L -X HEAD http://www.candy-line.io/
+$ curl -i -L --head http://www.candy-line.io/
 ```
 
 下記のように`HTTP/1.1 200 OK`と出ていれば問題ありません。
@@ -82,7 +82,6 @@ Accept-Ranges: bytes
 Content-Length: 6471
 Content-Type: text/html
 
-curl: (18) transfer closed with 6471 bytes remaining to read
 root@binita:~#
 ```
 
