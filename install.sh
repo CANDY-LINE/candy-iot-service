@@ -146,22 +146,6 @@ function install_service {
   REBOOT=1
 }
 
-function apply_patches {
-  md5sum -c ${SRC_DIR}/diff/blink-led.md5sum
-  if [ "$?" == "0" ]; then
-    cd /usr/bin/
-    patch blink-led < ${SRC_DIR}/diff/blink-led.patch
-    info "Modified Blinking LED Pin No. from 40 to 14"
-
-    mkdir -p ${SERVICE_HOME}/diff
-    FILES=`ls ${SRC_DIR}/diff/*`
-    for f in ${FILES}
-    do
-      cpf ${f} ${SERVICE_HOME}/diff
-    done
-  fi
-}
-
 function teardown {
   [ "${DEBUG}" ] || rm -fr ${SRC_DIR}
   if [ "${CONTAINER_MODE}" == "0" ] && [ "${REBOOT}" == "1" ]; then
@@ -185,5 +169,4 @@ setup
 install_cdc_ether
 install_candyred
 install_service
-apply_patches
 teardown
