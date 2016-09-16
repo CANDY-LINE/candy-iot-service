@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2015 Robotma.com
+# Copyright (c) 2016 CANDY LINE, Inc.
 
 CANDY_LINE_HOME=/opt/candy-line
 
 SERVICE_NAME=candy-iot
-GITHUB_ID=Robotma-com/candy-iot-service
+GITHUB_ID=CANDY-LINE/candy-iot-service
 
 SERVICE_HOME=${CANDY_LINE_HOME}/${SERVICE_NAME}
 
