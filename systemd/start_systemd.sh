@@ -96,7 +96,15 @@ function enable_auto_connect {
   /usr/bin/env python /opt/candy-line/${PRODUCT_DIR_NAME}/server_main.py ${MODEM_SERIAL_PORT} /var/run/candy-board-service.sock init2
   RET=$?
   if [ "${RET}" == "1" ]; then
-    log "** Waiting for USB being inactivated ***"
+    RET=`uname -r | grep edison`
+    RET=$?
+    if [ "${RET}" == "0" ]; then
+      # Reboot in order to avoid kernel panic
+      log "Rebooting..."
+      reboot
+      exit 0
+    fi
+    log "Waiting for USB being inactivated"
     wait_for_modem_usb_inactive
   elif [ "${RET}" != "0" ]; then
     exit ${RET}
