@@ -48,6 +48,12 @@ $ time SRC_DIR=$(pwd) DEBUG=1 CANDY_RED=0 ./install.sh
 ```
 
 # 履歴
+* 2.0.0
+  - [ltepi2-service](https://github.com/CANDY-LINE/ltepi2-service) をベースにした実装に変更
+  - AM Telecom社製LTE/3GモジュールAMP520へ対応
+  - CANDY REDのデフォルトフローを設定
+  - CANDY IoT (late 2016) へ対応
+
 * 1.7.0
   - コマンド名を`candy`に変更
   - CANDY REDのデフォルトフローに対応。ただし、現時点では互換性維持のためフローの内容は空としている
