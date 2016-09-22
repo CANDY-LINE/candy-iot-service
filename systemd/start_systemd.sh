@@ -77,6 +77,7 @@ function look_for_serial_port {
     sleep 1
     let COUNTER=COUNTER+1
   done
+  log "${MODEM_SERIAL_PORT} is selected"
 }
 
 function change_usb_data_conn {
