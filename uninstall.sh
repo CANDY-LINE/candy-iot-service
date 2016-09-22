@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2016 CANDY LINE, Inc.
-
-CANDY_LINE_HOME=/opt/candy-line
+VENDOR_HOME=/opt/candy-line
 
 SERVICE_NAME=candy-iot
-GITHUB_ID=CANDY-LINE/candy-iot-service
-
-SERVICE_HOME=${CANDY_LINE_HOME}/${SERVICE_NAME}
+SERVICE_HOME=${VENDOR_HOME}/${SERVICE_NAME}
 
 REBOOT=0
 
@@ -21,6 +17,18 @@ function info {
 
 function alert {
   echo -e "\033[93m[ALERT] $1\033[0m"
+}
+
+function assert_root {
+  if [[ $EUID -ne 0 ]]; then
+     echo "This script must be run as root"
+     exit 1
+  fi
+}
+
+function uninstall_candy_board {
+  pip uninstall -y candy-board-amt
+  pip uninstall -y candy-board-cli
 }
 
 function uninstall_cdc_ether {
@@ -40,14 +48,12 @@ function uninstall_cdc_ether {
 }
 
 function uninstall_service {
-  RET=`systemctl | grep ${SERVICE_NAME}.service`
+  RET=`systemctl | grep ${SERVICE_NAME}.service | grep running`
   RET=$?
   if [ "${RET}" == "0" ]; then
     systemctl stop ${SERVICE_NAME}
   fi
   systemctl disable ${SERVICE_NAME}
-
-  rm -f /usr/bin/ciot
 
   LIB_SYSTEMD="$(dirname $(dirname $(which systemctl)))/lib/systemd"
   rm -f ${LIB_SYSTEMD}/system/${SERVICE_NAME}.service
@@ -55,32 +61,23 @@ function uninstall_service {
   rm -f ${SERVICE_HOME}/*.sh
   rm -f ${SERVICE_HOME}/*.py
   rm -f ${SERVICE_HOME}/*.pyc
+  rm -f ${SERVICE_HOME}/*.json
+  systemctl daemon-reload
   info "${SERVICE_NAME} has been uninstalled"
   REBOOT=1
 }
 
-function revert_patches {
-  if [ -d "${SERVICE_HOME}/diff" ]; then
-    md5sum -c ${SERVICE_HOME}/diff/blink-led-rev.md5sum
-    if [ "$?" == "0" ]; then
-      cd /usr/bin/
-      patch -R blink-led < ${SERVICE_HOME}/diff/blink-led.patch
-      info "Reverted LED Pin No. from 14 to 40"
-    fi
-    rm -fr ${SERVICE_HOME}/diff
-  fi
-}
-
 function teardown {
   [ "$(ls -A ${SERVICE_HOME})" ] || rmdir ${SERVICE_HOME}
-  [ "$(ls -A ${CANDY_LINE_HOME})" ] || rmdir ${CANDY_LINE_HOME}
+  [ "$(ls -A ${VENDOR_HOME})" ] || rmdir ${VENDOR_HOME}
   if [ "${REBOOT}" == "1" ]; then
     alert "*** Please reboot the system! (enter 'reboot') ***"
   fi
 }
 
 # main
+assert_root
 uninstall_service
+uninstall_candy_board
 uninstall_cdc_ether
-revert_patches
 teardown
