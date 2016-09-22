@@ -1,73 +1,201 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2016 Robotma.com
+PRODUCT="CANDY IoT Board"
+PRODUCT_DIR_NAME="candy-iot"
+MODEM_USB_MODE=""
+MODEM_SERIAL_PORT=""
+DEBUG="yes"
 
-MODULE_SUPPORTED=0
-
-function try_to_change_usb_data_conn {
-  RET=`lsusb | grep 1ecb:0202`
-  RET=$?
-  if [ "${RET}" != "0" ]; then
-    return
+function log {
+  logger -t ${PRODUCT_DIR_NAME} $1
+  if [ "${DEBUG}" ]; then
+    echo ${PRODUCT_DIR_NAME} $1
   fi
-  # Reset to default
-  # echo -e "AT@USBCHG=ACM\r\r" | microcom -t 1000 -s 115200 /dev/ttyUSB1 && echo "*** Rebooting... ***" && reboot
-  # Change to ECM
-  logger -s "Modifying the USB data connection I/F to ECM"
-  echo -e "AT@USBCHG=ECM\r\rAT@AUTOCONN=1\r\r" | microcom -t 1000 -s 115200 /dev/ttyACM0
-  logger -s "*** Rebooting... ***"
-  reboot
+}
+
+function wait_for_modem_usb_active {
+  MAX=40
+  COUNTER=0
+  while [ ${COUNTER} -lt ${MAX} ];
+  do
+    RET=`lsusb | grep 1ecb:0208`
+    if [ "$?" == "0" ]; then
+      MODEM_USB_MODE="ECM"
+      break
+    fi
+    RET=`lsusb | grep 1ecb:0202`
+    if [ "$?" == "0" ]; then
+      MODEM_USB_MODE="ACM"
+      break
+    fi
+    sleep 1
+    let COUNTER=COUNTER+1
+  done
+}
+
+function wait_for_modem_usb_acm_inactive {
+  MAX=40
+  COUNTER=0
+  while [ ${COUNTER} -lt ${MAX} ];
+  do
+    RET=`lsusb | grep 1ecb:0202`
+    if [ "$?" != "0" ]; then
+      break
+    fi
+    sleep 1
+    let COUNTER=COUNTER+1
+  done
+}
+
+function wait_for_modem_usb_inactive {
+  MAX=40
+  COUNTER=0
+  while [ ${COUNTER} -lt ${MAX} ];
+  do
+    RET=`lsusb | grep 1ecb:0208`
+    if [ "$?" != "0" ]; then
+      RET=`lsusb | grep 1ecb:0202`
+      if [ "$?" != "0" ]; then
+        break
+      fi
+    fi
+    sleep 1
+    let COUNTER=COUNTER+1
+  done
+}
+
+function look_for_serial_port {
+  MAX=60
+  COUNTER=0
+  while [ ${COUNTER} -lt ${MAX} ];
+  do
+    MODEM_SERIAL_PORT=`/usr/bin/env python -c "import candy_board_amt; print(candy_board_amt.SerialPort.resolve_modem_port())"`
+    if [ "${MODEM_SERIAL_PORT}" != "None" ]; then
+      COUNTER=0
+      break
+    fi
+    sleep 1
+    let COUNTER=COUNTER+1
+  done
+}
+
+function change_usb_data_conn {
+  log "Modifying the USB data connection I/F to ECM"
+  /usr/bin/env python /opt/candy-line/${PRODUCT_DIR_NAME}/server_main.py ${MODEM_SERIAL_PORT} /var/run/candy-board-service.sock init1
+  RET=$?
+  if [ "${RET}" == "0" ]; then
+    log "*** Restarting modem... ***"
+  else
+    exit ${RET}
+  fi
+}
+
+function enable_auto_connect {
+  log "Enabling auto-connect mode"
+  /usr/bin/env python /opt/candy-line/${PRODUCT_DIR_NAME}/server_main.py ${MODEM_SERIAL_PORT} /var/run/candy-board-service.sock init2
+  RET=$?
+  if [ "${RET}" == "1" ]; then
+    log "** Waiting for USB being inactivated ***"
+    wait_for_modem_usb_inactive
+  elif [ "${RET}" != "0" ]; then
+    exit ${RET}
+  fi
+}
+
+function wait_for_default_route {
+  MAX=60
+  COUNTER=0
+  while [ ${COUNTER} -lt ${MAX} ];
+  do
+    RET=`ip route | grep ${IF_NAME}`
+    if [ "$?" == "0" ]; then
+      break
+    fi
+    sleep 1
+    let COUNTER=COUNTER+1
+  done
+}
+
+function register_usbserial {
+  # Registering a new id
+  if [ -e "/sys/bus/usb-serial/drivers/pl2303" ]; then
+    echo "1ecb 0208" > /sys/bus/usb-serial/drivers/pl2303/new_id
+  else
+    modprobe usbserial vendor=0x1ecb product=0x0208
+  fi
 }
 
 function diagnose_self {
-  MODULE_IDS="1ecb:0208" # space delimiter
-
-  RET=`dmesg | grep "register 'cdc_ether'"`
-  RET=$?
-  if [ "${RET}" != "0" ]; then
-    try_to_change_usb_data_conn
+  wait_for_modem_usb_active
+  if [ -z "${MODEM_USB_MODE}" ]; then
+    return
   fi
 
-  for m in ${MODULE_IDS}
-  do
-    RET=`lsusb | grep ${m}`
-    RET=$?
-    if [ "${RET}" == "0" ]; then
-      MODULE_SUPPORTED=1
+  if [ "${MODEM_USB_MODE}" == "ACM" ]; then
+    MODEM_USB_MODE=""
+
+    look_for_serial_port
+    change_usb_data_conn
+    wait_for_modem_usb_acm_inactive
+    wait_for_modem_usb_active
+    if [ -z "${MODEM_USB_MODE}" ]; then
+      return
     fi
-  done
+
+    register_usbserial
+    look_for_serial_port
+    enable_auto_connect
+    wait_for_modem_usb_active
+    if [ -z "${MODEM_USB_MODE}" ]; then
+      return
+    fi
+  fi
 }
 
 # LTE/3G USB Ethernet
 function activate_lte {
-  if [ "${MODULE_SUPPORTED}" != "1" ]; then
+  if [ -z "${MODEM_USB_MODE}" ]; then
     return
   fi
 
-  logger -s "Activating LTE/3G Module..."
-  IF_NAME=`dmesg | grep "renamed network interface usb1" | sed 's/^.* usb1 to //g'`
-  RET=$?
-  if [ "${RET}" == "0" ]; then
+  log "Activating LTE/3G Module..."
+  USB_ID=`dmesg | grep "New USB device found, idVendor=1ecb, idProduct=0208" | sed 's/^.*\] //g' | cut -f 1 -d ':' | cut -f 2 -d ' ' | tail -1`
+  # when renamed
+  IF_NAME=`dmesg | grep "renamed network interface usb1" | sed 's/^.* usb1 to //g' | cut -f 1 -d ' ' | tail -1`
+  if [ -z "${IF_NAME}" ]; then
+    IF_NAME=`dmesg | grep " ${USB_ID}" | grep "register 'cdc_ether'" | cut -f 2 -d ':' | cut -f 2 -d ' ' | tail -1`
+  fi
+  if [ -n "${IF_NAME}" ]; then
     ifconfig ${IF_NAME} up
-    logger -s "The interface [${IF_NAME}] is up!"
-    if [ ! -e "/sys/bus/usb-serial/drivers/pl2303/ttyUSB1" ]; then
-      for m in ${MODULE_IDS}
-      do
-        echo "${m/:/ }" > /sys/bus/usb-serial/drivers/pl2303/new_id
-      done
+    RET=`which udhcpc`
+    RET=$?
+    if [ "${RET}" == "0" ]; then
+      if [ -f "/var/run/udhcpc-${IF_NAME}.pid" ]; then
+        cat "/var/run/udhcpc-${IF_NAME}.pid" | xargs kill -9
+      fi
+      udhcpc -i ${IF_NAME} -p /var/run/udhcpc-${IF_NAME}.pid -S
     fi
+    log "The interface [${IF_NAME}] is up!"
+    register_usbserial
+    look_for_serial_port
+    wait_for_default_route
+
   else
     IF_NAME=""
   fi
 }
 
 # start banner
-logger -s "Initializing CANDY IoT Board..."
+log "Initializing ${PRODUCT}..."
 
+/opt/candy-line/${PRODUCT_DIR_NAME}/_modem_on.sh > /dev/null 2>&1
 diagnose_self
 activate_lte
 
 # end banner
-logger -s "CANDY IoT Board is initialized successfully!"
-
-/usr/bin/env python /opt/candy-line/candy-iot/server_main.py /dev/ttyUSB1 /var/run/candy-iot.sock ${IF_NAME}
+if [ "${MODEM_USB_MODE}" == "ECM" ]; then
+  log "${PRODUCT} is initialized successfully!"
+  /usr/bin/env python /opt/candy-line/${PRODUCT_DIR_NAME}/server_main.py ${MODEM_SERIAL_PORT} ${IF_NAME}
+else
+  log "${PRODUCT} is not initialized... Silently terminated"
+fi
