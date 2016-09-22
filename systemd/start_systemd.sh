@@ -85,7 +85,7 @@ function change_usb_data_conn {
   /usr/bin/env python /opt/candy-line/${PRODUCT_DIR_NAME}/server_main.py ${MODEM_SERIAL_PORT} /var/run/candy-board-service.sock init1
   RET=$?
   if [ "${RET}" == "0" ]; then
-    log "*** Restarting modem... ***"
+    log "Restarting modem..."
   else
     exit ${RET}
   fi
