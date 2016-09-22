@@ -4,7 +4,7 @@ PRODUCT="CANDY IoT Board"
 PRODUCT_DIR_NAME="candy-iot"
 MODEM_USB_MODE=""
 MODEM_SERIAL_PORT=""
-DEBUG="yes"
+DEBUG=""
 
 function log {
   logger -t ${PRODUCT_DIR_NAME} $1
