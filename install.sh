@@ -118,14 +118,7 @@ function install_candy_board {
   RET=`which pip`
   RET=$?
   if [ "${RET}" != "0" ]; then
-    RET=`which apt-get`
-    RET=$?
-    if [ "${RET}" == "0" ]; then
-      apt-get update -qq
-      apt-get install -qq python-pip
-    else
-      curl -L https://bootstrap.pypa.io/get-pip.py | /usr/bin/env python
-    fi
+    curl -L https://bootstrap.pypa.io/get-pip.py | /usr/bin/env python
   fi
 
   pip install --upgrade candy-board-cli \
