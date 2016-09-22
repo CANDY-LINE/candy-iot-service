@@ -8,6 +8,11 @@ candy-iot-serviceは、Intel Edison Yocto Linux上で動作する[CANDY IoTボ�
 
 candy-iot-serviceや、[CANDY IoTボード](http://www.candy-line.io/proandsv.html#candyiot)に関する説明については、専用の[利用ガイド](https://github.com/CANDY-LINE/CANDY-IoT-info/blob/master/README.md)をご覧ください。
 
+# 対応 Firmware
+
+- [Release 2.1 Yocto complete image (poky-yocto)](http://downloadmirror.intel.com/25384/eng/edison-iotdk-image-280915.zip)
+- Release 3.5 については現在対応中ですが、リリース時期は未定となっております
+
 # 管理者向け
 ## モジュールリリース時の注意
 
