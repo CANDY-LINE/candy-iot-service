@@ -23,7 +23,7 @@ import logging.handlers
 #                 e.g. /var/run/candy-board-service.sock
 # sys.argv[2] ... The network interface name to be monitored
 
-LED = 'gpio15'
+LED = 'gpio%s' % os.environ['LED2']
 logger = logging.getLogger('candy-iot')
 logger.setLevel(logging.INFO)
 handler = logging.handlers.SysLogHandler(address='/dev/log')
