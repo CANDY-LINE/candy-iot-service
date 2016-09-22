@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2015 Robotma.com
-
-CANDY_LINE_HOME=/opt/candy-line
+VENDOR_HOME=/opt/candy-line
 
 SERVICE_NAME=candy-iot
-GITHUB_ID=Robotma-com/candy-iot-service
-VERSION=1.7.0
+GITHUB_ID=CANDY-LINE/candy-iot-service
+VERSION=2.0.0
 
-SERVICE_HOME=${CANDY_LINE_HOME}/${SERVICE_NAME}
-SRC_DIR="${SRC_DIR:-/tmp/candy-iot-service-${VERSION}}"
+SERVICE_HOME=${VENDOR_HOME}/${SERVICE_NAME}
+SRC_DIR="${SRC_DIR:-/tmp/$(basename ${GITHUB_ID})-${VERSION}}"
 CANDY_RED=${CANDY_RED:-1}
 KERNEL="${KERNEL:-$(uname -r)}"
 CONTAINER_MODE=0
@@ -40,6 +38,21 @@ function setup {
   fi
 }
 
+function assert_root {
+  if [[ $EUID -ne 0 ]]; then
+     echo "This script must be run as root"
+     exit 1
+  fi
+}
+
+function uninstall_if_installed {
+  if [ -f "${SERVICE_HOME}/environment" ]; then
+    ${SERVICE_HOME}/uninstall.sh > /dev/null
+    systemctl daemon-reload
+    info "Existing version of candy-iot has been uninstalled"
+  fi
+}
+
 function cpf {
   cp -f $1 $2
   if [ "$?" == "0" ] && [ -f "${CP_DESTS}" ]; then
@@ -65,6 +78,10 @@ function download {
   fi
   cd /tmp
   curl -L https://github.com/${GITHUB_ID}/archive/${VERSION}.tar.gz | tar zx
+  if [ "$?" != "0" ]; then
+    err "Make sure internet is available"
+    exit 1
+  fi
 }
 
 function install_cdc_ether {
@@ -97,7 +114,27 @@ function install_cdc_ether {
   REBOOT=1
 }
 
-function install_candyred {
+function install_candy_board {
+  RET=`which pip`
+  RET=$?
+  if [ "${RET}" != "0" ]; then
+    RET=`which apt-get`
+    RET=$?
+    if [ "${RET}" == "0" ]; then
+      apt-get update -qq
+      apt-get install -qq python-pip
+    else
+      curl -L https://bootstrap.pypa.io/get-pip.py | /usr/bin/env python
+    fi
+  fi
+
+  pip install --upgrade candy-board-cli \
+    --global-option=build \
+    --global-option="--executable=$(which python)"
+  pip install --upgrade candy-board-amt
+}
+
+function install_candy_red {
   if [ "${CANDY_RED}" == "0" ]; then
     return
   fi
@@ -138,10 +175,10 @@ function install_service {
   sed -i -e "s/%VERSION%/${VERSION//\//\\/}/g" ${SRC_DIR}/systemd/${SERVICE_NAME}.service
 
   cpf ${SRC_DIR}/systemd/${SERVICE_NAME}.service ${LIB_SYSTEMD}/system/
-  cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
   systemctl enable ${SERVICE_NAME}
-  cpf ${SRC_DIR}/bin/candy /usr/bin/ciot # Backward Compatibility
-  cpf ${SRC_DIR}/bin/candy /usr/bin
+
+  cpf ${SRC_DIR}/uninstall.sh ${SERVICE_HOME}
+
   info "${SERVICE_NAME} service has been installed"
   REBOOT=1
 }
@@ -164,9 +201,11 @@ if [ "$1" == "pack" ]; then
   package
   exit 0
 fi
-
+assert_root
+uninstall_if_installed
 setup
+install_candy_board
 install_cdc_ether
-install_candyred
+install_candy_red
 install_service
 teardown
