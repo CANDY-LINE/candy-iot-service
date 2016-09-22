@@ -189,6 +189,7 @@ function activate_lte {
 # start banner
 log "Initializing ${PRODUCT}..."
 . /opt/candy-line/${PRODUCT_DIR_NAME}/_pin_settings.sh > /dev/null 2>&1
+export LED2
 
 /opt/candy-line/${PRODUCT_DIR_NAME}/_modem_on.sh > /dev/null 2>&1
 diagnose_self
@@ -197,7 +198,7 @@ activate_lte
 # end banner
 if [ "${MODEM_USB_MODE}" == "ECM" ]; then
   log "${PRODUCT} is initialized successfully!"
-  /usr/bin/env LED2=${LED2} python /opt/candy-line/${PRODUCT_DIR_NAME}/server_main.py ${MODEM_SERIAL_PORT} ${IF_NAME}
+  /usr/bin/env python /opt/candy-line/${PRODUCT_DIR_NAME}/server_main.py ${MODEM_SERIAL_PORT} ${IF_NAME}
 else
   log "${PRODUCT} is not initialized... Silently terminated"
 fi
