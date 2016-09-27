@@ -10,8 +10,12 @@ candy-iot-serviceや、[CANDY IoTボード](http://www.candy-line.io/proandsv.ht
 
 # 対応 Firmware
 
+- [Intel® Edison Module Firmware Software Release 3.5](https://downloadmirror.intel.com/26028/eng/iot-devkit-prof-dev-image-edison-20160606.zip)
 - [Release 2.1 Yocto complete image (poky-yocto)](http://downloadmirror.intel.com/25384/eng/edison-iotdk-image-280915.zip)
-- Release 3.5 については現在対応中ですが、リリース時期は未定となっております
+
+# 制限事項
+
+- `systemctl stop candy-iot`を使用してサービスを停止した後、`systemctl start candy-iot`にて再度モデムを起動させることはできません。停止した場合は、`reboot`して再起動するようにしてください。この問題はEdison/Yocto側の問題によるものであり、本モジュール内で回避する手段がないため、本モジュールによる解決予定はありません。このため、サービスの停止を行わない運用を強く推奨いたします。
 
 # 管理者向け
 ## モジュールリリース時の注意
@@ -48,6 +52,9 @@ $ time SRC_DIR=$(pwd) DEBUG=1 CANDY_RED=0 ./install.sh
 ```
 
 # 履歴
+* 2.1.0
+  - Intel® Edison Module Firmware Software Release 3.5 のファームウェアに対応
+
 * 2.0.0
   - [ltepi2-service](https://github.com/CANDY-LINE/ltepi2-service) をベースにした実装に変更
   - AM Telecom社製LTE/3GモジュールAMP520へ対応
