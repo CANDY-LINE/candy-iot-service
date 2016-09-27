@@ -94,7 +94,7 @@ function install_cdc_ether {
 
   MOD_DIR=/lib/modules/${KERNEL}/kernel/drivers/net/usb/
   mkdir -p ${MOD_DIR}
-  cpf ${SRC_DIR}/lib/cdc_ether.ko ${MOD_DIR}
+  cpf ${SRC_DIR}/lib/${KERNEL}/cdc_ether.ko ${MOD_DIR}
 
   if [ "${CONTAINER_MODE}" == "0" ]; then
     depmod
