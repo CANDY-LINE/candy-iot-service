@@ -1,7 +1,7 @@
 cdc_ether.ko
 ===
 
-The kernel module for USB CDC Ethernet built for Poky-Yocto (3.10.17-poky-edison+).
+The kernel module for USB CDC Ethernet built for Poky-Yocto.
 
 Source Code: https://git.yoctoproject.org/cgit/cgit.cgi/linux-yocto-3.10/tree/drivers/net/usb/cdc_ether.c
 
