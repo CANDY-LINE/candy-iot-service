@@ -52,6 +52,9 @@ $ time SRC_DIR=$(pwd) DEBUG=1 CANDY_RED=0 ./install.sh
 ```
 
 # 履歴
+* 2.1.1
+  - pipインストール時に不要となったオプションを削除
+
 * 2.1.0
   - Intel® Edison Module Firmware Software Release 3.5 のファームウェアに対応
 
