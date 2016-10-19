@@ -121,9 +121,7 @@ function install_candy_board {
     curl -L https://bootstrap.pypa.io/get-pip.py | /usr/bin/env python
   fi
 
-  pip install --upgrade candy-board-cli \
-    --global-option=build \
-    --global-option="--executable=$(which python)"
+  pip install --upgrade candy-board-cli
   pip install --upgrade candy-board-amt
 }
 
