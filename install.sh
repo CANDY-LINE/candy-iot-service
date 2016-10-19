@@ -4,7 +4,7 @@ VENDOR_HOME=/opt/candy-line
 
 SERVICE_NAME=candy-iot
 GITHUB_ID=CANDY-LINE/candy-iot-service
-VERSION=2.1.0
+VERSION=2.1.1
 
 SERVICE_HOME=${VENDOR_HOME}/${SERVICE_NAME}
 SRC_DIR="${SRC_DIR:-/tmp/$(basename ${GITHUB_ID})-${VERSION}}"
@@ -121,9 +121,7 @@ function install_candy_board {
     curl -L https://bootstrap.pypa.io/get-pip.py | /usr/bin/env python
   fi
 
-  pip install --upgrade candy-board-cli \
-    --global-option=build \
-    --global-option="--executable=$(which python)"
+  pip install --upgrade candy-board-cli
   pip install --upgrade candy-board-amt
 }
 
