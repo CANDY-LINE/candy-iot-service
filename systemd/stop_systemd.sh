@@ -53,8 +53,10 @@ function inactivate_lte {
 
   logger -t ${PRODUCT_DIR_NAME} "Inactivating LTE/3G Module..."
   USB_ID=`dmesg | grep "New USB device found, idVendor=1ecb, idProduct=0208" | sed 's/^.*\] //g' | cut -f 1 -d ':' | cut -f 2 -d ' ' | tail -1`
-  IF_NAME=`dmesg | grep " ${USB_ID}" | grep "register 'cdc_ether'" | cut -f 2 -d ':' | cut -f 2 -d ' ' | tail -1`
-  if [ -z "${IF_NAME}" ]; then
+  IF_NAME=`dmesg | grep " ${USB_ID}" | grep " register 'cdc_ether'" | cut -f 2 -d ':' | cut -f 2 -d ' ' | tail -1`
+  RET=`ifconfig ${IF_NAME}`
+  RET=$?
+  if [ "${RET}" != "0" ]; then
     # When renamed
     IF_NAME=`dmesg | grep "renamed network interface usb1" | sed 's/^.* usb1 to //g' | cut -f 1 -d ' ' | tail -1`
   fi
@@ -62,7 +64,7 @@ function inactivate_lte {
     ifconfig ${IF_NAME} down
     logger -t ${PRODUCT_DIR_NAME} "The interface [${IF_NAME}] is down!"
 
-    RET=`ifconfig | grep wlan0`
+    RET=`ifconfig wlan0`
     RET=$?
     if [ "${RET}" == "0" ]; then
       ifconfig "wlan0" down
