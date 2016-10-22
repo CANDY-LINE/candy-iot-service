@@ -36,6 +36,8 @@ led_sec = float(os.environ['BLINKY_INTERVAL_SEC']) \
 if led_sec < 0 or led_sec > 60:
     led_sec = 1.0
 online = False
+shutdown_state_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   '__shutdown')
 
 
 class Monitor(threading.Thread):
@@ -46,6 +48,8 @@ class Monitor(threading.Thread):
         self.nic = nic
 
     def terminate(self):
+        if os.path.isfile(shutdown_state_file):
+            return
         logger.error("CANDY IoT board modem is terminated. Shutting down.")
         # exit from non-main thread
         os.kill(os.getpid(), signal.SIGTERM)

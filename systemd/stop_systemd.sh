@@ -3,6 +3,7 @@
 PRODUCT="CANDY IoT Board"
 PRODUCT_DIR_NAME="candy-iot"
 MODULE_SUPPORTED=0
+SHUDOWN_STATE_FILE=/opt/candy-line/${PRODUCT_DIR_NAME}/__shutdown
 
 function led_off {
   . /opt/candy-line/${PRODUCT_DIR_NAME}/_pin_settings.sh > /dev/null 2>&1
@@ -72,6 +73,7 @@ function inactivate_lte {
 
 # start banner
 logger -t ${PRODUCT_DIR_NAME} "Inactivating ${PRODUCT}..."
+touch ${SHUDOWN_STATE_FILE}
 
 diagnose_self
 inactivate_lte
@@ -82,3 +84,4 @@ led_off # ensure LED off
 
 # end banner
 logger -t ${PRODUCT_DIR_NAME} "${PRODUCT} is inactivated successfully!"
+rm -f /opt/candy-line/${PRODUCT_DIR_NAME}/__shutdown
