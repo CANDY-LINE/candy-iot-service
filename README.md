@@ -45,7 +45,7 @@ $ make
 ### 動作確認 (Edison)
 
 ```bash
-$ VERSION=2.0.0 && rm -fr tmp && mkdir tmp && cd tmp && \
+$ VERSION=2.1.1 && rm -fr tmp && mkdir tmp && cd tmp && \
   tar zxf ~/candy-iot-service-${VERSION}.tgz
 $ time SRC_DIR=$(pwd) DEBUG=1 ./install.sh
 $ time SRC_DIR=$(pwd) DEBUG=1 CANDY_RED=0 ./install.sh
