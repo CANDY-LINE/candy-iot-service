@@ -2,6 +2,18 @@
 
 echo -e "\033[93m[WARN] *** INTERNAL USE, DO NOT RUN DIRECTLY *** \033[0m"
 
+# EnOcean Pins     Edison Pins
+# ----------------------------------------------------
+# NMI          => 47 (Output, Active low)
+# RESET        => 48 (Output, Active low)
+
+EO_NMI=47
+EO_NMI_PIN="/sys/class/gpio/gpio${EO_NMI}"
+EO_NMI_DIR="${EO_NMI_PIN}/direction"
+
+EO_RESET=48
+EO_RESET_PIN="/sys/class/gpio/gpio${EO_RESET}"
+EO_RESET_DIR="${EO_RESET_PIN}/direction"
 
 # Module Pins     Edison Pins
 # ----------------------------------------------------
@@ -31,12 +43,17 @@ LED2_PIN="/sys/class/gpio/gpio${LED2}"
 LED2_DIR="${LED2_PIN}/direction"
 
 function setup_ports {
-  for p in ${POWER_KEY} ${RESET_N} ${WWAN_DISABLE} ${LED2}; do
-    [[ ! -f "/sys/class/gpio/gpio${p}/direction" ]] && echo  "${p}"  > /sys/class/gpio/export
+  for p in ${EO_NMI} ${EO_RESET} ${POWER_KEY} ${RESET_N} ${WWAN_DISABLE} ${LED2}; do
+    [[ ! -f "/sys/class/gpio/gpio${p}/direction" ]] && echo "${p}"  > /sys/class/gpio/export
   done
 }
 
 function setup_pin_directions {
+  echo "out" > ${EO_NMI_DIR}
+  echo "out" > ${EO_RESET_DIR}
+  echo 1 > ${EO_NMI_PIN}/value
+  echo 1 > ${EO_RESET_PIN}/value
+
   echo "out" > ${POWER_KEY_DIR}
   echo "out" > ${RESET_N_DIR}
   echo "out" > ${WWAN_DISABLE_DIR}
